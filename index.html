@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>SetupGo Locate Business — Multi-group Location Sharing</title>
+<meta name="theme-color" content="#0b1020">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SetupGo Locate">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./icon-192.png">
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});}
+</script>
+<style>
+:root{
+  --navy-900:#0b1020;--navy-800:#111733;--navy-700:#1a2244;--navy-600:#232c54;
+  --ink:#e8ecff;--ink-dim:#9aa3c7;--ink-faint:#6b749c;
+  --rose:#f43f5e;--amber:#f59e0b;
+  --grad:linear-gradient(135deg,#f43f5e 0%,#fb7185 35%,#f59e0b 100%);
+  --grad-soft:linear-gradient(135deg,rgba(244,63,94,.18),rgba(245,158,11,.18));
+  --green:#34d399;--line:rgba(255,255,255,.08);--shadow:0 18px 50px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--navy-900);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased;}
+#app{height:100dvh;width:100%;position:relative;overflow:hidden;}
+
+.logo{width:44px;height:44px;border-radius:13px;background:var(--grad);display:grid;place-items:center;font-weight:800;color:#fff;font-size:20px;box-shadow:0 8px 24px -6px rgba(244,63,94,.55);flex:none;position:relative;}
+.logo span{position:relative;z-index:2;}
+.logo::after{content:"";position:absolute;right:7px;top:9px;width:5px;height:5px;border-radius:50%;background:#fff;}
+.logo.big{width:72px;height:72px;border-radius:21px;font-size:34px;box-shadow:0 14px 40px -8px rgba(244,63,94,.6);}
+.logo.big::after{right:12px;top:15px;width:8px;height:8px;}
+.brand-name{font-weight:800;letter-spacing:.3px;font-size:18px;}
+.brand-name b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.muted{color:var(--ink-dim);}.faint{color:var(--ink-faint);}
+
+.langtog{display:inline-flex;background:var(--navy-700);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px;}
+.langtog button{border:none;background:transparent;color:var(--ink-faint);font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:9px;cursor:pointer;letter-spacing:.4px;}
+.langtog button.on{background:var(--grad);color:#fff;}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease;z-index:5;}
+.screen.active{opacity:1;pointer-events:auto;}
+
+#welcome{background:radial-gradient(900px 520px at 80% -10%,rgba(244,63,94,.26),transparent 60%),radial-gradient(900px 620px at -10% 110%,rgba(245,158,11,.2),transparent 55%),var(--navy-900);padding:0;justify-content:space-between;}
+.wc-lang{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:6;}
+.wc-inner{flex:1;overflow-y:auto;padding:38px 24px 10px;display:flex;flex-direction:column;}
+.wc-logo{display:flex;justify-content:center;margin-bottom:16px;}
+.wc-h1{font-size:28px;line-height:1.18;text-align:center;font-weight:800;letter-spacing:-.4px;margin:30px 0 12px;}
+.wc-h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.wc-sub{text-align:center;color:var(--ink-dim);font-size:14.5px;line-height:1.55;margin:0 auto;max-width:330px;}
+.notice-card{margin-top:30px;border:1px solid var(--line);border-radius:22px;background:var(--navy-800);padding:8px 16px;}
+.nc-row{display:flex;gap:14px;align-items:center;padding:15px 2px;}
+.nc-row+.nc-row{border-top:1px solid var(--line);}
+.nc-ic{width:44px;height:44px;border-radius:14px;background:var(--grad-soft);display:grid;place-items:center;font-size:21px;flex:none;}
+.nc-row b{display:block;font-size:14.5px;font-weight:700;margin-bottom:2px;}
+.nc-row span{display:block;font-size:12.5px;color:var(--ink-dim);line-height:1.4;}
+.wc-foot{padding:14px 24px calc(22px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--navy-900) 30%);}
+
+#onboard{background:radial-gradient(900px 500px at 80% -10%,rgba(244,63,94,.2),transparent 60%),var(--navy-900);padding:26px 22px calc(26px + env(safe-area-inset-bottom));overflow-y:auto;}
+.ob-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.field{margin-top:22px;}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:1.3px;color:var(--ink-faint);font-weight:700;margin-bottom:10px;display:block;}
+.input{width:100%;padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:var(--navy-800);color:var(--ink);font-size:16px;outline:none;transition:border .2s,box-shadow .2s;}
+.input:focus{border-color:rgba(244,63,94,.6);box-shadow:0 0 0 4px rgba(244,63,94,.12);}
+.input::placeholder{color:var(--ink-faint);}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.mode{position:relative;border:1px solid var(--line);background:var(--navy-800);border-radius:18px;padding:18px 16px;cursor:pointer;transition:.2s;overflow:hidden;}
+.mode .ic{font-size:26px;margin-bottom:10px;}
+.mode h3{margin:0 0 4px;font-size:16px;font-weight:700;}
+.mode p{margin:0;font-size:12px;color:var(--ink-dim);line-height:1.4;}
+.mode.sel{border-color:transparent;background:var(--grad-soft);box-shadow:0 0 0 1.5px rgba(244,63,94,.55) inset;}
+.mode.sel::after{content:"✓";position:absolute;top:12px;right:14px;color:var(--rose);font-weight:800;}
+.consent{margin-top:22px;border:1px solid var(--line);border-radius:18px;background:var(--navy-800);padding:18px;}
+.consent .ch{display:flex;gap:13px;align-items:flex-start;cursor:pointer;}
+.box{width:24px;height:24px;border-radius:8px;border:2px solid var(--ink-faint);flex:none;margin-top:1px;display:grid;place-items:center;transition:.2s;color:transparent;font-weight:800;font-size:14px;}
+.ch.on .box{background:var(--grad);border-color:transparent;color:#fff;}
+.consent p{margin:0;font-size:13.5px;color:var(--ink-dim);line-height:1.5;}
+.consent p b{color:var(--ink);}
+.consent-hint{font-size:11.5px;color:var(--ink-faint);margin-top:11px;line-height:1.5;padding-left:37px;}
+.rolelock{display:flex;align-items:center;gap:11px;border:1px solid rgba(244,63,94,.3);background:var(--grad-soft);border-radius:16px;padding:15px 16px;font-size:14px;font-weight:600;}
+.rolelock .ic{font-size:20px;}
+.btn{width:100%;padding:17px;border:none;border-radius:16px;font-size:16px;font-weight:800;background:var(--grad);color:#fff;cursor:pointer;margin-top:22px;letter-spacing:.2px;box-shadow:0 14px 30px -10px rgba(244,63,94,.6);transition:.2s;}
+.btn:disabled{opacity:.4;box-shadow:none;cursor:not-allowed;}
+.btn:active:not(:disabled){transform:translateY(1px);}
+.legal{text-align:center;font-size:11.5px;color:var(--ink-faint);margin-top:14px;line-height:1.5;}
+
+/* ---- mini map ---- */
+#map{position:absolute;inset:0;z-index:1;overflow:hidden;touch-action:none;cursor:grab;
+  background:radial-gradient(1200px 700px at 30% 20%,#17213f,#0e1430 70%);}
+#map:active{cursor:grabbing;}
+.mm-tiles,.mm-ovl{position:absolute;inset:0;}
+.mm-tiles{z-index:1;}
+.mm-ovl{z-index:2;pointer-events:none;}
+.mm-tile{position:absolute;width:256px;height:256px;filter:brightness(.72) contrast(1.05) saturate(.85) hue-rotate(5deg);-webkit-user-drag:none;user-select:none;}
+.mm-grid{position:absolute;inset:0;z-index:1;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:48px 48px;}
+.mm-marker{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;will-change:left,top;}
+.mm-attr{position:absolute;right:5px;bottom:4px;z-index:3;font-size:9px;color:var(--ink-faint);background:rgba(11,16,32,.7);padding:1px 6px;border-radius:6px;}
+.mk .pin{width:34px;height:34px;border-radius:50% 50% 50% 4px;transform:rotate(45deg);display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:0 6px 14px -3px rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.85);}
+.mk .pin span{transform:rotate(-45deg);font-size:13px;}
+.mk.me .pin{background:var(--grad);}
+.mk.sos .pin{background:#ef4444!important;border-color:#fff;animation:sospulse 1s infinite;}
+@keyframes sospulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.6);}70%{box-shadow:0 0 0 14px rgba(239,68,68,0);}100%{box-shadow:0 0 0 0 rgba(239,68,68,0);}}
+.mm-geo{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.mm-trail{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;}
+.selbar{display:none;align-items:center;gap:11px;padding:12px 14px;border-radius:16px;background:var(--grad-soft);border:1px solid rgba(244,63,94,.35);margin-bottom:12px;}
+.selbar.show{display:flex;}
+.selbar .sb-l{flex:1;min-width:0;}
+.selbar .sb-n{font-weight:700;font-size:14px;}
+.selbar .sb-m{font-size:12px;color:var(--ink-dim);margin-top:2px;}
+.selbar .sb-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-700);color:var(--ink-dim);font-size:13px;cursor:pointer;flex:none;}
+.geo-circle{position:absolute;border-radius:50%;border:2px solid rgba(244,63,94,.65);background:rgba(244,63,94,.1);transform:translate(-50%,-50%);}
+.geo-label{position:absolute;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--ink);background:rgba(11,16,32,.82);border:1px solid rgba(244,63,94,.4);padding:3px 9px;border-radius:10px;white-space:nowrap;}
+
+.sosbtn{position:absolute;right:16px;bottom:238px;z-index:10;width:48px;height:48px;border-radius:14px;background:#ef4444;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(239,68,68,.6);letter-spacing:.5px;}
+.sosbtn.on{animation:sospulse 1s infinite;}
+.sosbtn:active{transform:scale(.95);}
+.sosalert{position:absolute;left:12px;right:12px;top:calc(70px + env(safe-area-inset-top));z-index:25;background:#ef4444;color:#fff;border-radius:16px;padding:14px 16px;font-size:15px;font-weight:800;box-shadow:0 12px 32px -6px rgba(239,68,68,.75);display:none;align-items:center;gap:11px;cursor:pointer;animation:sosflash 1s infinite;}
+.sosalert.show{display:flex;}
+.sosalert .sos-ic{font-size:21px;line-height:1;}
+@keyframes sosflash{0%,100%{background:#ef4444;}50%{background:#b91c1c;box-shadow:0 12px 40px -4px rgba(239,68,68,1);}}
+
+.places{margin-bottom:12px;}
+.places-head{display:flex;align-items:center;justify-content:space-between;margin:0 4px 9px;}
+.places-head .h{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-faint);font-weight:700;}
+.miniadd{border:1px solid rgba(244,63,94,.4);background:var(--grad-soft);color:var(--ink);font-size:12px;font-weight:700;padding:5px 11px;border-radius:11px;cursor:pointer;}
+.places-list{display:flex;gap:9px;overflow-x:auto;padding-bottom:2px;}
+.place-chip{flex:none;min-width:130px;background:var(--navy-700);border:1px solid var(--line);border-radius:14px;padding:11px 13px;cursor:pointer;}
+.place-chip .pn{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:6px;}
+.place-chip .pc{font-size:11.5px;color:var(--ink-dim);margin-top:3px;}
+.place-chip .pc b{color:var(--green);}
+.places-empty{font-size:12px;color:var(--ink-faint);padding:4px 6px 2px;line-height:1.5;}
+.invitebar{display:flex;flex-direction:column;gap:11px;padding:13px 14px;border-radius:16px;background:var(--navy-700);border:1px dashed rgba(244,63,94,.5);margin-bottom:12px;}
+.invitebar .inv-k{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-faint);font-weight:700;}
+.invitebar .inv-code{font-size:22px;font-weight:800;letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:2px;}
+.inv-share{display:flex;gap:9px;}
+.inv-sbtn{flex:1;border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12.5px;padding:11px 8px;border-radius:12px;cursor:pointer;}
+.mem-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-600);color:var(--ink-dim);font-size:14px;cursor:pointer;flex:none;margin-left:4px;}
+.leave-btn{margin-top:14px;width:100%;padding:13px;border-radius:14px;border:1px solid rgba(239,68,68,.4);background:transparent;color:#f87171;font-weight:700;font-size:13.5px;cursor:pointer;}
+.filtertabs{display:flex;gap:6px;background:var(--navy-700);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:10px;}
+.filtertabs button{flex:1;border:none;background:transparent;color:var(--ink-dim);font-size:12.5px;font-weight:700;padding:8px 6px;border-radius:10px;cursor:pointer;}
+.filtertabs button.sel{background:var(--grad);color:#fff;}
+.showto{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);margin-bottom:12px;}
+.showto .st-k{font-size:12px;color:var(--ink-dim);font-weight:600;}
+.st-chips{display:flex;gap:7px;margin-left:auto;}
+.st-chips button{border:1px solid var(--line);background:var(--navy-600);color:var(--ink-dim);font-size:12px;font-weight:700;padding:6px 13px;border-radius:11px;cursor:pointer;}
+.st-chips button.on{background:var(--grad);border-color:transparent;color:#fff;}
+
+.modal{position:absolute;inset:0;z-index:30;background:rgba(5,8,18,.6);display:none;align-items:flex-end;}
+.modal.show{display:flex;}
+.modal-card{width:100%;background:var(--navy-800);border-top-left-radius:24px;border-top-right-radius:24px;border-top:1px solid var(--line);padding:22px 20px calc(22px + env(safe-area-inset-bottom));}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:16px;}
+.pm-hint{font-size:11.5px;color:var(--ink-faint);margin-top:8px;}
+.pm-radius{display:flex;gap:9px;margin-top:16px;}
+.pm-radius button{flex:1;padding:12px;border-radius:13px;border:1px solid var(--line);background:var(--navy-700);color:var(--ink-dim);font-weight:700;font-size:13px;cursor:pointer;}
+.pm-radius button.sel{background:var(--grad-soft);border-color:transparent;box-shadow:0 0 0 1.5px rgba(244,63,94,.55) inset;color:var(--ink);}
+.pm-btns{display:flex;gap:10px;margin-top:20px;}
+.pm-btns button{flex:1;padding:15px;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;border:none;}
+.pm-cancel{background:var(--navy-700);color:var(--ink);border:1px solid var(--line)!important;}
+.pm-save{background:var(--grad);color:#fff;}
+@media(min-width:860px){.sosbtn{bottom:auto;top:154px;right:436px;}.modal{align-items:center;justify-content:center;}.modal-card{max-width:420px;border-radius:24px;border:1px solid var(--line);}}
+
+.topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,rgba(11,16,32,.92),rgba(11,16,32,.55) 70%,transparent);}
+.topbar .logo{width:38px;height:38px;border-radius:11px;font-size:17px;}
+.topbar .t{flex:1;min-width:0;}
+.topbar .t .n{font-weight:800;font-size:15px;}
+.topbar .t .s{font-size:11.5px;color:var(--ink-dim);display:flex;align-items:center;gap:6px;}
+.modepill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--grad-soft);color:var(--ink);border:1px solid rgba(244,63,94,.35);text-transform:uppercase;letter-spacing:.5px;}
+.topbar .langtog{transform:scale(.9);transform-origin:right center;}
+.recenter{position:absolute;right:16px;bottom:180px;z-index:10;width:48px;height:48px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:20px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);}
+.recenter:active{transform:scale(.95);}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:10;background:var(--navy-800);border-top-left-radius:26px;border-top-right-radius:26px;border-top:1px solid var(--line);box-shadow:0 -20px 50px -20px rgba(0,0,0,.7);padding:4px 16px calc(14px + env(safe-area-inset-bottom));max-height:82dvh;display:flex;flex-direction:column;transition:max-height .25s ease;}
+.grab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 9px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.grab-bar{width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);}
+.grab::after{content:"⌄";font-size:15px;line-height:.5;color:var(--ink-faint);transform:rotate(180deg);transition:transform .25s ease;}
+.sheet.expanded .grab::after{transform:rotate(0);}
+.sheet-body{display:flex;flex-direction:column;overflow-y:auto;min-height:0;padding-top:8px;}
+.sharebar{display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:18px;background:var(--navy-700);border:1px solid var(--line);margin-bottom:12px;}
+.sharebar .dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:pulse 2s infinite;}
+.sharebar.off .dot{background:var(--ink-faint);animation:none;box-shadow:none;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5);}70%{box-shadow:0 0 0 10px rgba(52,211,153,0);}100%{box-shadow:0 0 0 0 rgba(52,211,153,0);}}
+.sharebar .txt{flex:1;min-width:0;}
+.sharebar .txt .a{font-weight:700;font-size:14.5px;}
+.sharebar .txt .b{font-size:12px;color:var(--ink-dim);}
+.switch{width:56px;height:32px;border-radius:20px;background:var(--navy-600);position:relative;cursor:pointer;flex:none;transition:.25s;border:1px solid var(--line);}
+.switch.on{background:var(--grad);border-color:transparent;}
+.switch .knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+.switch.on .knob{left:27px;}
+.rolebanner{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-dim);background:var(--grad-soft);border:1px solid rgba(244,63,94,.25);border-radius:14px;padding:10px 13px;margin-bottom:12px;}
+.rolebanner .ic{font-size:15px;}
+.list-head{display:flex;align-items:center;justify-content:space-between;margin:2px 4px 10px;}
+.list-head .h{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-faint);font-weight:700;}
+.list-head .c{font-size:12px;color:var(--ink-dim);}
+.members{overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding-bottom:4px;}
+.member{display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:16px;background:var(--navy-700);border:1px solid var(--line);cursor:pointer;transition:.15s;}
+.member:active{background:var(--navy-600);}
+.av{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-weight:800;color:#fff;font-size:16px;flex:none;position:relative;}
+.av .on{position:absolute;right:-2px;bottom:-2px;width:13px;height:13px;border-radius:50%;background:var(--green);border:2.5px solid var(--navy-700);}
+.av .on.idle{background:var(--amber);}.av .on.offl{background:var(--ink-faint);}
+.member .info{flex:1;min-width:0;}
+.member .info .nm{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:7px;}
+.tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--grad-soft);color:var(--ink);border:1px solid rgba(244,63,94,.3);}
+.tag-btn{cursor:pointer;border:1px solid rgba(244,63,94,.55);}
+.member .info .meta{font-size:12px;color:var(--ink-dim);margin-top:2px;}
+.member .dist{font-size:12.5px;color:var(--ink-dim);text-align:right;white-space:nowrap;}
+.member .dist b{color:var(--ink);font-size:14px;}
+.you .av{background:var(--grad);}
+.you{border-color:rgba(244,63,94,.35);background:var(--grad-soft);}
+.empty{text-align:center;color:var(--ink-faint);font-size:13px;padding:22px 10px;line-height:1.5;}
+.toast{position:absolute;left:50%;top:calc(80px + env(safe-area-inset-top));transform:translateX(-50%);z-index:20;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);padding:11px 16px;border-radius:14px;font-size:13px;box-shadow:var(--shadow);opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;max-width:90vw;}
+.toast.show{opacity:1;}
+.connbadge{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--ink-faint);background:rgba(11,16,32,.6);padding:4px 9px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;gap:6px;}
+.connbadge .d{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
+.connbadge.live{color:var(--green);border-color:rgba(52,211,153,.4);}
+.connbadge.live .d{background:var(--green);box-shadow:0 0 6px var(--green);}
+.groupbar{position:relative;margin-bottom:10px;}
+.gb-cur{width:100%;display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-weight:800;font-size:14.5px;cursor:pointer;}
+.gb-cur .gb-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex:none;}
+.gb-cur #gbName{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gb-cur .gb-ch{color:var(--ink-faint);}
+.gb-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;background:var(--navy-800);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:8px;max-height:50dvh;overflow-y:auto;}
+.gb-menu.show{display:block;}
+.gb-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;border:none;background:transparent;color:var(--ink);border-radius:11px;cursor:pointer;font-size:14px;font-weight:600;text-align:left;}
+.gb-item:hover{background:var(--navy-700);}
+.gb-item.on{background:var(--grad-soft);box-shadow:0 0 0 1px rgba(244,63,94,.4) inset;}
+.gb-item small{color:var(--ink-dim);font-size:11px;font-weight:700;text-transform:uppercase;flex:none;}
+.gb-add{width:100%;margin-top:4px;padding:11px;border:1px dashed rgba(244,63,94,.5);background:var(--grad-soft);color:var(--ink);border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;}
+
+@media(max-width:859px){
+  .sheet:not(.expanded) .sheet-body{display:none;}
+  #mapscreen.sheet-open .recenter,#mapscreen.sheet-open .sosbtn{display:none;}
+}
+@media(min-width:860px){
+  #welcome .wc-inner,#welcome .wc-foot{max-width:480px;margin-left:auto;margin-right:auto;width:100%;}
+  #onboard{max-width:560px;margin:0 auto;}
+  .topbar{padding:16px 20px;gap:12px;}
+  .sheet{left:auto;right:18px;top:84px;bottom:18px;width:400px;max-height:none;border-radius:24px;border:1px solid var(--line);}
+  .sheet-body{display:flex!important;}
+  .grab{display:none;}
+  .members{flex:1;}
+  .recenter{bottom:auto;top:96px;right:436px;}
+  .connbadge{bottom:20px;}
+  .sosalert{left:18px;right:432px;top:88px;}
+}
+@media(min-width:1200px){.sheet{width:440px;}.recenter{right:476px;}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- WELCOME -->
+  <section id="welcome" class="screen active">
+    <div class="wc-lang"><div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div></div>
+    <div class="wc-inner">
+      <div class="wc-logo"><div class="logo big"><span>S</span></div></div>
+      <div class="brand-name" style="text-align:center;font-size:22px;"><b>SetupGo</b> Locate</div>
+      <div class="faint" style="text-align:center;font-size:12.5px;margin-top:4px;" data-i18n="tagline"></div>
+      <h1 class="wc-h1" data-i18n-html="hero"></h1>
+      <p class="wc-sub" data-i18n="heroSub"></p>
+      <div class="notice-card">
+        <div class="nc-row"><div class="nc-ic">📍</div><div><b data-i18n="n1t"></b><span data-i18n="n1d"></span></div></div>
+        <div class="nc-row"><div class="nc-ic">🔔</div><div><b data-i18n="n2t"></b><span data-i18n="n2d"></span></div></div>
+        <div class="nc-row"><div class="nc-ic">⏹️</div><div><b data-i18n="n3t"></b><span data-i18n="n3d"></span></div></div>
+      </div>
+    </div>
+    <div class="wc-foot">
+      <button id="welcomeBtn" class="btn" style="margin-top:0;" data-i18n="getStarted"></button>
+      <div class="legal" data-i18n-html="legal"></div>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section id="onboard" class="screen">
+    <div class="ob-top">
+      <div class="logo"><span>S</span></div>
+      <div style="flex:1;">
+        <div class="brand-name"><b>SetupGo</b> Locate</div>
+        <div class="faint" style="font-size:12px;" data-i18n="setupSub"></div>
+      </div>
+      <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
+    </div>
+    <div class="field" style="margin-top:8px;">
+      <label class="label" data-i18n="qName"></label>
+      <input id="nameInput" class="input" data-i18n-ph="namePh" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label class="label" data-i18n="qAction"></label>
+      <div class="modes">
+        <div class="mode sel" data-act="create"><div class="ic">🛡️</div><h3 data-i18n="actCreateT"></h3><p data-i18n="actCreateD"></p></div>
+        <div class="mode" data-act="join"><div class="ic">🔑</div><h3 data-i18n="actJoinT"></h3><p data-i18n="actJoinD"></p></div>
+      </div>
+    </div>
+    <div class="field" id="gnameField">
+      <label class="label" data-i18n="qGroupName"></label>
+      <input id="gnameInput" class="input" data-i18n-ph="gnamePh" autocomplete="off" />
+    </div>
+    <div id="joinFields" style="display:none;">
+      <div class="field">
+        <label class="label" data-i18n="qCode"></label>
+        <input id="codeInput" class="input" data-i18n-ph="codePh" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px;" />
+      </div>
+      <div class="field" id="modeField">
+        <label class="label" data-i18n="qMode"></label>
+        <div class="modes">
+          <div class="mode" data-mode="Family"><div class="ic">👨‍👩‍👧‍👦</div><h3 data-i18n="modeFamilyT"></h3><p data-i18n="modeFamilyD"></p></div>
+          <div class="mode sel" data-mode="Team"><div class="ic">👷</div><h3 data-i18n="modeTeamT"></h3><p data-i18n="modeTeamD"></p></div>
+        </div>
+      </div>
+      <div class="field" id="modeLocked" style="display:none;">
+        <label class="label" data-i18n="joiningLabel"></label>
+        <div class="rolelock"><span class="ic" id="modeLockIc">👥</span><span id="modeLockText"></span></div>
+      </div>
+    </div>
+    <div class="consent">
+      <label class="ch" id="consentToggle"><div class="box">✓</div><div><p data-i18n-html="consent"></p></div></label>
+      <div class="consent-hint" data-i18n="consentHint"></div>
+    </div>
+    <button id="startBtn" class="btn" disabled data-i18n="enterMap"></button>
+  </section>
+
+  <!-- MAP -->
+  <section id="mapscreen" class="screen">
+    <div id="map"><div class="mm-grid"></div><div class="mm-tiles"></div><div class="mm-geo"></div><svg class="mm-trail"></svg><div class="mm-ovl"></div><div class="mm-attr">© OpenStreetMap</div></div>
+    <div class="sosalert" id="sosAlert"></div>
+    <div class="topbar">
+      <div class="logo"><span>S</span></div>
+      <div class="t">
+        <div class="n">SetupGo Locate</div>
+        <div class="s"><span id="modePill" class="modepill">Team</span><span id="statusTxt"></span></div>
+      </div>
+      <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
+    </div>
+    <div class="sosbtn" id="sosBtn">SOS</div>
+    <div class="recenter" id="recenter">◎</div>
+    <div class="sheet" id="sheet">
+      <div class="grab" id="grab"><span class="grab-bar"></span></div>
+      <div class="groupbar" id="groupBar"><button class="gb-cur" id="gbCur"><span class="gb-dot"></span><span id="gbName">—</span><span class="gb-ch">▾</span></button><div class="gb-menu" id="gbMenu"></div></div>
+      <div class="sharebar" id="sharebar">
+        <div class="dot"></div>
+        <div class="txt"><div class="a" id="shareTitle"></div><div class="b" id="shareSub"></div></div>
+        <div class="switch on" id="shareSwitch"><div class="knob"></div></div>
+      </div>
+      <div class="selbar" id="selBar"></div>
+      <div class="sheet-body" id="sheetBody">
+        <div class="rolebanner" id="roleBanner"><span class="ic">🛡️</span><span id="roleBannerTxt"></span></div>
+        <div class="invitebar" id="inviteBar" style="display:none;">
+          <div class="inv-top"><div class="inv-k" id="inviteLabel"></div><div class="inv-code" id="inviteCode">——————</div></div>
+          <div class="inv-share"><button class="inv-sbtn" id="shareFam"></button><button class="inv-sbtn" id="shareTeam"></button></div>
+        </div>
+        <div class="showto" id="showToRow" style="display:none;">
+          <span class="st-k" id="showToLabel"></span>
+          <div class="st-chips"><button data-st="Family" id="stFam"></button><button data-st="Team" id="stTeam"></button></div>
+        </div>
+        <div class="places" id="placesBlock">
+          <div class="places-head"><span class="h" id="placesLabel"></span><button class="miniadd" id="addPlaceBtn"></button></div>
+          <div class="places-list" id="placesList"></div>
+        </div>
+        <div class="filtertabs" id="filterTabs" style="display:none;">
+          <button data-filter="all" class="sel" id="ftAll"></button>
+          <button data-filter="Family" id="ftFam"></button>
+          <button data-filter="Team" id="ftTeam"></button>
+        </div>
+        <div class="list-head"><div class="h" id="listLabel"></div><div class="c" id="onlineCount"></div></div>
+        <div class="members" id="members"></div>
+        <button class="leave-btn" id="leaveBtn"></button>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="connbadge" id="connBadge"><span class="d"></span><span id="connTxt">DEMO</span></div>
+
+    <!-- add place modal -->
+    <div class="modal" id="placeModal">
+      <div class="modal-card">
+        <div class="modal-title" id="pmTitle"></div>
+        <input id="pmName" class="input" autocomplete="off" />
+        <div class="pm-hint" id="pmHint"></div>
+        <div class="pm-radius" id="pmRadius">
+          <button data-r="200" class="sel">200 m</button>
+          <button data-r="500">500 m</button>
+          <button data-r="1000">1 km</button>
+        </div>
+        <div class="pm-btns">
+          <button class="pm-cancel" id="pmCancel"></button>
+          <button class="pm-save" id="pmSave"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDX07FcgfEm8Mas9uhISthTzUTpX_U7BJY",
+  authDomain: "setupgo-locate.firebaseapp.com",
+  projectId: "setupgo-locate",
+  storageBucket: "setupgo-locate.firebasestorage.app",
+  messagingSenderId: "730043639963",
+  appId: "1:730043639963:web:5218ed9ba26e5df35bfe3e"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbAuth = getAuth(fbApp);
+const fbDb = getFirestore(fbApp);
+
+(function(){
+  "use strict";
+
+  /* ================= i18n ================= */
+  var I={
+    fil:{
+      tagline:"Consent-based location sharing",
+      hero:"Alam mo kung nasaan<br>ang <em>importante sa'yo</em>",
+      heroSub:"Bawat miyembro mismo ang pumapayag na mag-share. Transparent, ligtas, at ikaw ang may kontrol.",
+      n1t:"Consent-based", n1d:"Ikaw mismo ang pumipili na mag-share — hindi palihim.",
+      n2t:"Laging malinaw", n2d:"Makikita mo kung kailan ka nagsa-share ng lokasyon.",
+      n3t:"Ikaw ang may kontrol", n3d:"Isang pindot lang para itigil ang sharing anumang oras.",
+      getStarted:"Magsimula →",
+      legal:"Sa pagpindot, sumasang-ayon ka sa consent-based sharing.<br>Para magkakita ang mga phone, buksan ang parehong link na naka-sign in.",
+      setupSub:"I-setup ang profile mo",
+      qName:"Ano ang pangalan mo?", namePh:"hal. Fernando",
+      qRole:"Ano ang role mo?",
+      roleAdminT:"Admin", roleAdminD:"Nakikita ang lahat ng member at lokasyon nila.",
+      roleMemberT:"Member", roleMemberD:"Nakikita mo ang ibang member (peer-to-peer).",
+      roleLockAdmin:"Admin — ikaw ang may-ari ng app", roleLockMember:"Member — awtomatikong itinakda",
+      qMode:"Piliin ang grupo",
+      modeFamilyT:"Family", modeFamilyD:"Para sa pamilya — makita ang isa't isa.",
+      modeTeamT:"Team", modeTeamD:"Para sa trabaho — share habang naka-duty.",
+      consent:"<b>Pumapayag akong i-share ang aking lokasyon.</b> Kusa kong pinipili ito at puwede kong ihinto anumang oras.",
+      consentHint:"Opsyonal — kung hindi i-tsek, papasok ka bilang view-only (hindi nagsa-share). Pwede mong i-on ang sharing mamaya.",
+      enterMap:"Pumasok sa map →",
+      live:"Live sharing", paused:"Naka-pause",
+      shareOnT:"Nagsa-share ka ng lokasyon",
+      shareOnFamily:"Nakikita ka ng iyong pamilya", shareOnTeam:"Nakikita ka ng iyong team",
+      shareOffT:"Naka-pause ang sharing", shareOffSub:"Walang nakakakita sa iyong lokasyon",
+      adminBanner:"Admin view — nakikita mo ang Team at Family",
+      memberBanner:"Peer-to-peer — nakikita ninyo ang isa't isa (hindi kasama ang admin)",
+      listFamily:"Mga miyembro ng pamilya", listTeam:"Mga miyembro ng team",
+      listAll:"Lahat ng member (Pamilya + Team)", pillAll:"Admin · Lahat",
+      gFamily:"Pamilya", gTeam:"Team",
+      online:"online", you:"IKAW",
+      youOn:"Nagsa-share ka ngayon", youOff:"Hindi ka nagsa-share",
+      offline:"Offline", justNow:"Ngayon lang", minAgo:"min ang nakalipas", hrAgo:"oras ang nakalipas",
+      emptyLive:"Wala pang ibang member na nakabukas. Ipabukas sa kanila ang parehong link para lumitaw sila rito.",
+      tGetting:"Kinukuha ang iyong lokasyon…", tFound:"Nakita ang iyong lokasyon ✓",
+      tNoGps:"Walang GPS access — hindi ka makikita hangga't hindi pinapayagan", tOn:"Naka-on ang sharing ✓", tOff:"Itinigil ang sharing",
+      LIVE:"LIVE", DEMO:"DEMO (preview)",
+      places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
+      pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"Ilalagay sa kasalukuyang gitna ng map", save:"I-save", cancel:"Kanselahin",
+      insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
+      sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
+      qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
+      qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit", nameTaken:"Ginamit na ang pangalang ito sa grupo — magdagdag ng initial ng apelyido (hal. Fernando C.)",
+      invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", shareBtn:"Ibahagi", codeCopied:"Nakopya ang invite link ✓",
+      inviteFam:"📨 Imbita sa Pamilya", inviteTeam:"📨 Imbita sa Team", joiningLabel:"Sasali ka sa grupong:",
+      qGroupName:"Pangalan ng grupo (customer o team)", gnamePh:"hal. Pamilya Custodio, IMI Team", addGroup:"＋ Magdagdag / Sumali sa grupo",
+      leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:"
+    },
+    en:{
+      tagline:"Consent-based location sharing",
+      hero:"Know where the people<br>who <em>matter to you</em> are",
+      heroSub:"Every member chooses to share. Transparent, safe, and you stay in control.",
+      n1t:"Consent-based", n1d:"You choose to share — never in secret.",
+      n2t:"Always clear", n2d:"You can see whenever you're sharing your location.",
+      n3t:"You're in control", n3d:"One tap to stop sharing anytime.",
+      getStarted:"Get started →",
+      legal:"By continuing, you agree to consent-based sharing.<br>For phones to see each other, open the same link while signed in.",
+      setupSub:"Set up your profile",
+      qName:"What's your name?", namePh:"e.g. Fernando",
+      qRole:"What's your role?",
+      roleAdminT:"Admin", roleAdminD:"See every member and their location.",
+      roleMemberT:"Member", roleMemberD:"See other members (peer-to-peer).",
+      roleLockAdmin:"Admin — you own the app", roleLockMember:"Member — set automatically",
+      qMode:"Choose a group",
+      modeFamilyT:"Family", modeFamilyD:"For family — see each other.",
+      modeTeamT:"Team", modeTeamD:"For work — share while on duty.",
+      consent:"<b>I agree to share my location.</b> I choose this freely and can stop anytime.",
+      consentHint:"Optional — if unchecked, you enter view-only (not sharing). You can turn sharing on later.",
+      enterMap:"Enter map →",
+      live:"Live sharing", paused:"Paused",
+      shareOnT:"You're sharing your location",
+      shareOnFamily:"Your family can see you", shareOnTeam:"Your team can see you",
+      shareOffT:"Sharing is paused", shareOffSub:"No one can see your location",
+      adminBanner:"Admin view — you see Team and Family",
+      memberBanner:"Peer-to-peer — you see each other (admin hidden)",
+      listFamily:"Family members", listTeam:"Team members",
+      listAll:"All members (Family + Team)", pillAll:"Admin · All",
+      gFamily:"Family", gTeam:"Team",
+      online:"online", you:"YOU",
+      youOn:"Sharing now", youOff:"Not sharing",
+      offline:"Offline", justNow:"Just now", minAgo:"min ago", hrAgo:"hr ago",
+      emptyLive:"No other members are open yet. Have them open the same link to appear here.",
+      tGetting:"Getting your location…", tFound:"Location found ✓",
+      tNoGps:"No GPS access — you won't be visible until you allow it", tOn:"Sharing is on ✓", tOff:"Sharing stopped",
+      LIVE:"LIVE", DEMO:"DEMO (preview)",
+      places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
+      pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"Placed at the current map center", save:"Save", cancel:"Cancel",
+      insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
+      sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
+      qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
+      qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again", nameTaken:"That name is already used — add a surname initial (e.g. Fernando C.)",
+      invite:"Invite code — share with team/family", copyCode:"Copy", shareBtn:"Share", codeCopied:"Invite link copied ✓",
+      inviteFam:"📨 Invite to Family", inviteTeam:"📨 Invite to Team", joiningLabel:"You'll join:",
+      qGroupName:"Group name (customer or team)", gnamePh:"e.g. Custodio Family, IMI Team", addGroup:"＋ Add / Join a group",
+      leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:"
+    }
+  };
+
+  var state={lang:'fil',name:"",role:"Admin",mode:"Team",consent:false,sharing:true,
+    youLatLng:null,onMap:false,live:false,myId:null,liveDocs:{},
+    sos:false,places:[],geoPrev:null,geoNames:{},history:{},selected:null,hasFix:false,filter:'all',showTo:[]};
+  function t(k){return I[state.lang][k];}
+  function $(id){return document.getElementById(id);}
+  function initials(n){return (n||'?').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
+
+  /* ================= capabilities ================= */
+  /* ================= Firebase group state ================= */
+  var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false,groups:[],active:-1};
+  function applyActive(){ var m=G.groups[G.active]; if(!m)return; G.groupId=m.id; G.code=m.code; state.role=m.role; state.mode=m.mode; G.joinedOnce=false; }
+  function clearLocal(){ try{['sgb_name','sgb_groups','sgb_active'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
+  function saveLocal(){ try{localStorage.setItem('sgb_name',state.name);localStorage.setItem('sgb_groups',JSON.stringify(G.groups));localStorage.setItem('sgb_active',String(G.active));}catch(e){} }
+  function genCode(){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s; }
+  function applyRoleUI(){}  // role is now decided by create/join, not identity
+  var state_action='create';  // 'create' | 'join'
+
+  /* ================= demo data ================= */
+  var team=[
+    {id:'t1',name:'Mark R.',role:'Field',group:'Team',color:'#6366f1',dlat:0.0075,dlng:-0.0060,status:'on',last:{fil:'Ngayon lang',en:'Just now'}},
+    {id:'t2',name:'Jenny L.',role:'Office',group:'Team',color:'#f59e0b',dlat:-0.0048,dlng:0.0082,status:'on',last:{fil:'1 min ang nakalipas',en:'1 min ago'}},
+    {id:'t3',name:'Carlo M.',role:'Driver',group:'Team',color:'#10b981',dlat:0.0120,dlng:0.0100,status:'idle',last:{fil:'8 min ang nakalipas',en:'8 min ago'}},
+    {id:'t4',name:'Ana P.',role:'Field',group:'Team',color:'#ec4899',dlat:-0.0095,dlng:-0.0110,status:'offl',last:{fil:'2 oras ang nakalipas',en:'2 hrs ago'}}
+  ];
+  var family=[
+    {id:'f1',name:'Nanay',role:'',group:'Family',color:'#f43f5e',dlat:0.0030,dlng:0.0040,status:'on',last:{fil:'Ngayon lang',en:'Just now'}},
+    {id:'f2',name:'Ate Bea',role:'',group:'Family',color:'#8b5cf6',dlat:-0.0060,dlng:0.0070,status:'on',last:{fil:'3 min ang nakalipas',en:'3 min ago'}},
+    {id:'f3',name:'Kuya Jun',role:'',group:'Family',color:'#06b6d4',dlat:0.0090,dlng:-0.0050,status:'idle',last:{fil:'22 min ang nakalipas',en:'22 min ago'}}
+  ];
+  function demoRoster(){return state.role==='Admin'?family.concat(team):(state.mode==='Family'?family:team);}
+  function groupLabel(g){return g==='Family'?t('gFamily'):t('gTeam');}
+  var PAL=['#6366f1','#f59e0b','#10b981','#ec4899','#06b6d4','#8b5cf6','#f43f5e','#22c55e','#eab308','#14b8a6'];
+  function colorFor(id){var h=0;for(var i=0;i<id.length;i++){h=(h*31+id.charCodeAt(i))>>>0;}return PAL[h%PAL.length];}
+  function relTime(ts){var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return t('justNow');var m=Math.floor(s/60);if(m<60)return m+' '+t('minAgo');var h=Math.floor(m/60);return h+' '+t('hrAgo');}
+
+  /* ================= i18n apply ================= */
+  function applyI18n(){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=t(el.dataset.i18n);});
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el){el.innerHTML=t(el.dataset.i18nHtml);});
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el){el.placeholder=t(el.dataset.i18nPh);});
+    document.querySelectorAll('[data-langtog]').forEach(function(tg){tg.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.lang===state.lang);});});
+    document.documentElement.lang=state.lang;
+  }
+  function setLang(l){state.lang=l;applyI18n();applyRoleUI();if(state.onMap)refreshMap();}
+  document.querySelectorAll('[data-langtog] button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.lang);});});
+
+  /* ================= onboarding ================= */
+  $('welcomeBtn').addEventListener('click',function(){$('welcome').classList.remove('active');$('onboard').classList.add('active');});
+  document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';$('gnameField').style.display=(state_action==='create')?'':'none';refreshStart();});});
+  document.querySelectorAll('[data-mode]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.mode=m.dataset.mode;});});
+  var nameInput,startBtn,consentToggle;
+  function refreshStart(){ var ok=nameInput.value.trim().length>0; if(state_action==='join'){ var c=$('codeInput'); ok=ok&&c&&c.value.trim().length>0; } startBtn.disabled=!ok; }
+
+  /* ================= mini map engine ================= */
+  var FALLBACK={lat:14.2726,lng:121.1256};
+  function txU(lng,z){return (lng+180)/360*Math.pow(2,z);}
+  function tyU(lat,z){var r=lat*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z);}
+  function x2lon(tx,z){return tx/Math.pow(2,z)*360-180;}
+  function y2lat(ty,z){var n=Math.PI-2*Math.PI*ty/Math.pow(2,z);return 180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n)));}
+
+  var MM={
+    el:null,tiles:null,ovl:null,z:15,cLat:FALLBACK.lat,cLng:FALLBACK.lng,w:0,h:0,
+    me:null, members:[], byId:{},
+    init:function(){
+      this.el=$('map'); this.tiles=this.el.querySelector('.mm-tiles'); this.ovl=this.el.querySelector('.mm-ovl'); this.geo=this.el.querySelector('.mm-geo'); this.trail=this.el.querySelector('.mm-trail');
+      this.resize(); this.bindPan();
+      var self=this; window.addEventListener('resize',function(){self.resize();self.render();});
+      this.ovl.addEventListener('click',function(e){
+        var mk=e.target.closest('.mm-marker'); if(!mk)return;
+        selectMember(mk.dataset.id);
+      });
+      this.render();
+    },
+    resize:function(){this.w=this.el.clientWidth;this.h=this.el.clientHeight;},
+    setView:function(lat,lng,z){if(lat!=null){this.cLat=lat;this.cLng=lng;}if(z)this.z=z;this.render();},
+    project:function(lat,lng){
+      var cx=txU(this.cLng,this.z)*256, cy=tyU(this.cLat,this.z)*256;
+      return {x:txU(lng,this.z)*256-(cx-this.w/2), y:tyU(lat,this.z)*256-(cy-this.h/2)};
+    },
+    setMe:function(ll,show){ this.me=ll?{lat:ll.lat,lng:ll.lng,show:show,name:state.name,sos:state.sos}:null; this.render(); },
+    setMembers:function(list){ this.members=list.filter(function(m){return m._ll;}).map(function(m){return {id:m.id,lat:m._ll[0],lng:m._ll[1],color:m.color,name:m.name,sos:m.sos};}); this.render(); },
+    setGeofences:function(list){ this.geofences=list||[]; this.render(); },
+    setTrail:function(pts){ this.trailPts=pts; this.render(); },
+    metersPerPixel:function(lat){ return 156543.03392*Math.cos(lat*Math.PI/180)/Math.pow(2,this.z); },
+    render:function(){ if(!this.el)return; this.renderTiles(); this.renderGeo(); this.renderTrail(); this.renderMarkers(); },
+    renderTrail:function(){
+      if(!this.trail)return; var pts=this.trailPts;
+      if(!pts||pts.length<2){ this.trail.innerHTML=''; return; }
+      var self=this, ptStr=pts.map(function(p){var q=self.project(p.lat,p.lng);return Math.round(q.x)+','+Math.round(q.y);}).join(' ');
+      var s='<polyline points="'+ptStr+'" fill="none" stroke="rgba(244,63,94,.85)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 7"/>';
+      pts.forEach(function(p,i){ if(i===pts.length-1)return; var q=self.project(p.lat,p.lng); s+='<circle cx="'+Math.round(q.x)+'" cy="'+Math.round(q.y)+'" r="2.5" fill="rgba(244,63,94,.55)"/>'; });
+      this.trail.innerHTML=s;
+    },
+    renderGeo:function(){
+      if(!this.geo)return; var self=this,h='';
+      (this.geofences||[]).forEach(function(g){
+        var p=self.project(g.lat,g.lng), pr=g.radius/self.metersPerPixel(g.lat);
+        h+='<div class="geo-circle" style="left:'+p.x+'px;top:'+p.y+'px;width:'+(pr*2)+'px;height:'+(pr*2)+'px"></div>';
+        h+='<div class="geo-label" style="left:'+p.x+'px;top:'+(p.y-pr-4)+'px">'+g.name+'</div>';
+      });
+      this.geo.innerHTML=h;
+    },
+    renderTiles:function(){
+      var z=this.z, sc=Math.pow(2,z);
+      var cx=txU(this.cLng,z)*256, cy=tyU(this.cLat,z)*256, left=cx-this.w/2, top=cy-this.h/2;
+      var tx0=Math.floor(left/256), ty0=Math.floor(top/256), tx1=Math.floor((left+this.w)/256), ty1=Math.floor((top+this.h)/256);
+      var h='';
+      for(var ty=ty0;ty<=ty1;ty++){
+        if(ty<0||ty>=sc) continue;
+        for(var tx=tx0;tx<=tx1;tx++){
+          var wx=((tx%sc)+sc)%sc;
+          var sx=Math.round(tx*256-left), sy=Math.round(ty*256-top);
+          h+='<img class="mm-tile" src="https://tile.openstreetmap.org/'+z+'/'+wx+'/'+ty+'.png" style="left:'+sx+'px;top:'+sy+'px" onerror="this.style.display=\'none\'" draggable="false">';
+        }
+      }
+      this.tiles.innerHTML=h;
+    },
+    renderMarkers:function(){
+      var h='', self=this; this.byId={};
+      function pin(m,isMe){
+        var p=self.project(m.lat,m.lng);
+        self.byId[m.id||'me']=m;
+        return '<div class="mm-marker" data-id="'+(m.id||'me')+'" style="left:'+p.x+'px;top:'+p.y+'px">'+
+          '<div class="mk '+(isMe?'me':'')+(m.sos?' sos':'')+'"><div class="pin" style="'+(isMe||m.sos?'':'background:'+m.color)+'"><span>'+initials(m.name)+'</span></div></div></div>';
+      }
+      this.members.forEach(function(m){h+=pin(m,false);});
+      if(this.me&&this.me.show){ this.me.id='me'; h+=pin(this.me,true); }
+      this.ovl.innerHTML=h;
+    },
+    bindPan:function(){
+      var el=this.el, self=this, drag=null;
+      el.addEventListener('pointerdown',function(e){drag={x:e.clientX,y:e.clientY,cLat:self.cLat,cLng:self.cLng};try{el.setPointerCapture(e.pointerId);}catch(_){}});
+      el.addEventListener('pointermove',function(e){
+        if(!drag)return;
+        var dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+        var cx=txU(drag.cLng,self.z)*256, cy=tyU(drag.cLat,self.z)*256;
+        self.cLng=x2lon((cx-dx)/256,self.z); self.cLat=y2lat((cy-dy)/256,self.z);
+        self.render();
+      });
+      var end=function(){drag=null;};
+      el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('pointerleave',end);
+    }
+  };
+
+  function haversine(a,b){var R=6371,dLat=(b[0]-a.lat)*Math.PI/180,dLng=(b[1]-a.lng)*Math.PI/180;var s=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a.lat*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);var d=R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));return d<1?Math.round(d*1000)+' m':d.toFixed(1)+' km';}
+  function distM(aLat,aLng,bLat,bLng){var R=6371000,dLat=(bLat-aLat)*Math.PI/180,dLng=(bLng-aLng)*Math.PI/180;var s=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(aLat*Math.PI/180)*Math.cos(bLat*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));}
+
+  function placeYou(center,recenter){
+    if(!center)return; state.youLatLng=center;
+    MM.setMe(center,state.sharing);
+    if(recenter) MM.setView(center.lat,center.lng);
+  }
+
+  function refreshMap(){
+    $('modePill').textContent=state.role==='Admin'?t('pillAll'):state.mode;
+    $('statusTxt').textContent=state.sharing?t('live'):t('paused');
+    $('roleBanner').querySelector('.ic').textContent=state.role==='Admin'?'🛡️':'🤝';
+    $('roleBannerTxt').textContent=state.role==='Admin'?t('adminBanner'):t('memberBanner');
+    if(state.role==='Admin'){ $('listLabel').textContent=state.filter==='all'?t('listAll'):(state.filter==='Family'?t('listFamily'):t('listTeam')); }
+    else { $('listLabel').textContent=state.mode==='Family'?t('listFamily'):t('listTeam'); }
+    var ft=$('filterTabs');
+    if(state.role==='Admin'){ ft.style.display='flex'; $('ftAll').textContent=t('filterAll'); $('ftFam').textContent=t('gFamily'); $('ftTeam').textContent=t('gTeam');
+      $('ftAll').classList.toggle('sel',state.filter==='all'); $('ftFam').classList.toggle('sel',state.filter==='Family'); $('ftTeam').classList.toggle('sel',state.filter==='Team'); }
+    else { ft.style.display='none'; }
+    var st=$('showToRow');
+    if(state.role==='Admin'){ st.style.display='flex'; $('showToLabel').textContent=t('showToLabel'); $('stFam').textContent=t('gFamily'); $('stTeam').textContent=t('gTeam'); $('stFam').classList.toggle('on',state.showTo.indexOf('Family')>=0); $('stTeam').classList.toggle('on',state.showTo.indexOf('Team')>=0); }
+    else { st.style.display='none'; }
+    var bar=$('sharebar');
+    if(state.sharing){$('shareTitle').textContent=t('shareOnT');$('shareSub').textContent=state.mode==='Family'?t('shareOnFamily'):t('shareOnTeam');bar.classList.remove('off');$('shareSwitch').classList.add('on');}
+    else{$('shareTitle').textContent=t('shareOffT');$('shareSub').textContent=t('shareOffSub');bar.classList.add('off');$('shareSwitch').classList.remove('on');}
+    $('connBadge').classList.toggle('live',state.live);
+    $('connTxt').textContent=state.live?t('LIVE'):t('DEMO');
+    var inv=$('inviteBar');
+    if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('shareFam').textContent=t('inviteFam'); $('shareTeam').textContent=t('inviteTeam'); }
+    else { inv.style.display='none'; }
+    $('leaveBtn').textContent=t('leaveGroup');
+    renderGroupBar();
+    draw();
+  }
+
+  function currentList(center){
+    if(state.live){
+      var out=[];
+      Object.keys(state.liveDocs).forEach(function(id){
+        if(id===G.uid)return; var o=state.liveDocs[id]; if(!o)return;
+        if(state.role!=='Admin'){
+          if(o.role==='Admin'){ if(!(o.sharing && Array.isArray(o.showTo) && o.showTo.indexOf(state.mode)>=0)) return; }
+          else { if(o.group!==state.mode) return; }
+        } else if(state.filter!=='all' && o.group!==state.filter){ return; }
+        var sharing=!!o.sharing, hasLoc=(o.lat!=null&&o.lng!=null);
+        var mins=(Date.now()-(o.ts||0))/60000;
+        var status=!sharing?'offl':(mins<2?'on':(mins<15?'idle':'offl'));
+        out.push({id:id,name:o.name||'—',color:colorFor(id),tag:state.role==='Admin'?groupLabel(o.group):'',role:o.group||'',status:status,metaText:relTime(o.ts||0),sos:!!o.sos,_ll:(sharing&&hasLoc)?[o.lat,o.lng]:null});
+      });
+      out.sort(function(a,b){return (a.status==='offl')-(b.status==='offl');});
+      return out;
+    }
+    return demoRoster().map(function(m){
+      var ll=(m.status!=='offl')?[(center?center.lat:FALLBACK.lat)+m.dlat,(center?center.lng:FALLBACK.lng)+m.dlng]:null;
+      return {id:m.id,name:m.name,color:m.color,tag:state.role==='Admin'?groupLabel(m.group):m.role,role:m.role,status:m.status,metaText:m.last[state.lang],sos:!!m.sos,_ll:ll};
+    });
+  }
+
+  function renderMembers(center,list){
+    var wrap=$('members'); wrap.innerHTML='';
+    var online=list.filter(function(m){return m.status!=='offl';}).length+(state.sharing?1:0);
+    $('onlineCount').textContent=online+' '+t('online');
+    var you=document.createElement('div'); you.className='member you';
+    you.innerHTML='<div class="av">'+initials(state.name)+(state.sharing?'<div class="on"></div>':'<div class="on offl"></div>')+'</div>'+
+      '<div class="info"><div class="nm">'+(state.name||'—')+' <span class="tag">'+t('you')+'</span></div>'+
+      '<div class="meta">'+(state.sharing?t('youOn'):t('youOff'))+'</div></div><div class="dist faint">—</div>';
+    wrap.appendChild(you);
+    if(state.live&&list.length===0){var e=document.createElement('div');e.className='empty';e.textContent=t('emptyLive');wrap.appendChild(e);return;}
+    list.forEach(function(m){
+      var el=document.createElement('div'); el.className='member';
+      var sc=m.status==='on'?'':(m.status==='idle'?'idle':'offl');
+      var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—'));
+      var xbtn=state.role==='Admin'?'<button class="mem-x" data-rm="1">✕</button>':'';
+      var tagHtml=(state.role==='Admin'&&m.role)?' <button class="tag tag-btn">'+groupLabel(m.role)+' ⇄</button>':(m.tag?' <span class="tag">'+m.tag+'</span>':'');
+      el.innerHTML='<div class="av" style="background:'+m.color+'">'+initials(m.name)+'<div class="on '+sc+'"></div></div>'+
+        '<div class="info"><div class="nm">'+m.name+tagHtml+'</div>'+
+        '<div class="meta">'+m.metaText+'</div></div><div class="dist">'+dist+'</div>'+xbtn;
+      el.addEventListener('click',function(){if(m._ll){selectMember(m.id);}});
+      if(state.role==='Admin'){
+        var xb=el.querySelector('.mem-x'); if(xb) xb.addEventListener('click',function(e){e.stopPropagation(); if(confirm(t('removeQ')+m.name+'?')) removeMember(m.id); });
+        var gb=el.querySelector('.tag-btn'); if(gb) gb.addEventListener('click',function(e){e.stopPropagation(); setMemberGroup(m.id, m.role==='Family'?'Team':'Family'); });
+      }
+      wrap.appendChild(el);
+    });
+  }
+
+  function peopleForGeo(list){
+    var arr=list.filter(function(m){return m._ll;}).map(function(m){return {id:m.id,name:m.name,lat:m._ll[0],lng:m._ll[1]};});
+    if(state.sharing&&state.youLatLng) arr.push({id:'me',name:state.name,lat:state.youLatLng.lat,lng:state.youLatLng.lng});
+    return arr;
+  }
+  function geoMsg(name,place,arrived){
+    if(state.lang==='fil') return 'Si '+name+' ay '+(arrived?t('arrivedAt'):t('leftFrom'))+' '+place;
+    return name+' '+(arrived?t('arrivedAt'):t('leftFrom'))+' '+place;
+  }
+  function computePlaces(list){
+    var ppl=peopleForGeo(list), cur={};
+    state.places.forEach(function(g){
+      g.inside=[];
+      ppl.forEach(function(p){ if(distM(g.lat,g.lng,p.lat,p.lng)<=g.radius){ g.inside.push(p); } });
+      cur[g.id]=g.inside.map(function(p){return p.id;});
+    });
+    ppl.forEach(function(p){ state.geoNames[p.id]=p.name; });
+    if(state.geoPrev){
+      state.places.forEach(function(g){
+        var prev=state.geoPrev[g.id]||[], now=cur[g.id]||[];
+        g.inside.forEach(function(p){ if(p.id!=='me' && prev.indexOf(p.id)<0) toast(geoMsg(p.name,g.name,true)); });
+        prev.forEach(function(pid){ if(pid!=='me' && now.indexOf(pid)<0) toast(geoMsg(state.geoNames[pid]||'—',g.name,false)); });
+      });
+    }
+    state.geoPrev=cur;
+  }
+  function renderPlaces(){
+    $('placesLabel').textContent=t('places');
+    $('addPlaceBtn').textContent=t('addPlace');
+    $('addPlaceBtn').style.display=(state.role==='Admin')?'':'none';
+    var wrap=$('placesList'); wrap.innerHTML='';
+    if(state.places.length===0){ var e=document.createElement('div'); e.className='places-empty'; e.textContent=t('noPlaces'); wrap.appendChild(e); return; }
+    state.places.forEach(function(g){
+      var el=document.createElement('div'); el.className='place-chip';
+      var cnt=g.inside?g.inside.length:0;
+      el.innerHTML='<div class="pn">📍 '+g.name+'</div><div class="pc">'+(cnt>0?('<b>'+cnt+'</b> '+t('insideN')):t('nobodyHere'))+'</div>';
+      el.addEventListener('click',function(){MM.setView(g.lat,g.lng);});
+      wrap.appendChild(el);
+    });
+  }
+  function renderSosBanner(list){
+    var names=[],who=null;
+    if(state.sos) names.push(state.name||'—');
+    list.forEach(function(m){ if(m.sos){ names.push(m.name); if(!who&&m._ll) who=m; } });
+    var el=$('sosAlert');
+    if(names.length){
+      el.classList.add('show');
+      el.innerHTML='<span class="sos-ic">🚨</span><span>'+names.join(', ')+' — '+t('needsHelp')+'</span>';
+      el.onclick=function(){ if(who){ MM.setView(who._ll[0],who._ll[1],16); selectMember(who.id); } };
+    } else { el.classList.remove('show'); el.innerHTML=''; el.onclick=null; }
+    $('sosBtn').classList.toggle('on',state.sos);
+    $('sosBtn').textContent=state.sos?'STOP':'SOS';
+  }
+  function pushHist(id,lat,lng){
+    var h=state.history[id]||(state.history[id]=[]); var last=h[h.length-1];
+    if(last&&distM(last.lat,last.lng,lat,lng)<8)return;
+    h.push({lat:lat,lng:lng}); if(h.length>25)h.shift();
+  }
+  function recordHistory(list){
+    if(!state.live)return;
+    list.forEach(function(m){ if(m._ll) pushHist(m.id,m._ll[0],m._ll[1]); });
+    if(state.youLatLng) pushHist('me',state.youLatLng.lat,state.youLatLng.lng);
+  }
+  function synthTrail(m){
+    var seed=0,id=m.id; for(var i=0;i<id.length;i++){seed=(seed*31+id.charCodeAt(i))>>>0;}
+    var dx=(((seed%5)-2)||1)*0.0016, dy=((((seed>>3)%5)-2)||1)*0.0016, ll=m._ll, pts=[], n=6;
+    for(var k=n;k>=1;k--){ var f=k/n, wob=Math.sin(k+seed%6)*0.00035; pts.push({lat:ll[0]-dy*f+wob,lng:ll[1]-dx*f+wob}); }
+    pts.push({lat:ll[0],lng:ll[1]}); return pts;
+  }
+  function trailPoints(m){
+    if(!m||!m._ll)return null;
+    if(state.live){ var h=state.history[m.id]; return (h&&h.length>=2)?h:null; }
+    return synthTrail(m);
+  }
+  function selectMember(id){ if(id==='me'){state.selected=null;draw();return;} state.selected=id; var m=MM.byId[id]; if(m)MM.cLat=m.lat,MM.cLng=m.lng; draw(); }
+  function renderSelBar(sel,center){
+    var bar=$('selBar');
+    if(!sel||!sel._ll){ bar.classList.remove('show'); bar.innerHTML=''; return; }
+    var dm=distM(center.lat,center.lng,sel._ll[0],sel._ll[1]);
+    var drive=Math.max(1,Math.round(dm/500)), walk=Math.max(1,Math.round(dm/83.3));
+    var dstr=dm<1000?Math.round(dm)+' m':(dm/1000).toFixed(1)+' km';
+    bar.classList.add('show');
+    bar.innerHTML='<div class="sb-l"><div class="sb-n">'+sel.name+'</div><div class="sb-m">📍 '+dstr+' · 🚗 ~'+drive+' min · 🚶 ~'+walk+' min</div></div><button class="sb-x" id="selClose">✕</button>';
+    $('selClose').addEventListener('click',function(e){e.stopPropagation();state.selected=null;MM.setTrail(null);draw();});
+  }
+  function draw(){
+    var center=state.youLatLng||FALLBACK;
+    var list=currentList(center);
+    recordHistory(list);
+    computePlaces(list);
+    var sel=state.selected?list.filter(function(m){return m.id===state.selected;})[0]:null;
+    MM.setGeofences(state.places);
+    MM.setTrail(sel?trailPoints(sel):null);
+    MM.setMembers(list);
+    renderPlaces();
+    renderMembers(center,list);
+    renderSosBanner(list);
+    renderSelBar(sel,center);
+  }
+
+  /* ================= Firebase backend ================= */
+  var lastDbWrite=0;
+  function myMemberDoc(){var o={name:state.name,role:state.role,group:state.mode,sharing:state.sharing,sos:state.sos,showTo:state.showTo,ts:Date.now()};if(state.hasFix&&state.youLatLng){o.lat=state.youLatLng.lat;o.lng=state.youLatLng.lng;}else{o.lat=null;o.lng=null;}return o;}
+  function writeMyDoc(immediate){
+    if(!state.live||!G.groupId||!G.uid)return; var now=Date.now(); if(!immediate&&now-lastDbWrite<9000)return; lastDbWrite=now;
+    setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true}).catch(function(){});
+  }
+  function subscribeFB(){
+    if(G.unsub)G.unsub();
+    G.unsub=onSnapshot(collection(fbDb,'groups',G.groupId,'members'),function(snap){
+      var out={},meStill=false; snap.forEach(function(d){out[d.id]=d.data(); if(d.id===G.uid)meStill=true;});
+      state.liveDocs=out;
+      if(G.joinedOnce&&!meStill){ kicked(); return; }
+      if(meStill)G.joinedOnce=true;
+      if(state.onMap)draw();
+    },function(){});
+    if(G.gunsub)G.gunsub();
+    G.gunsub=onSnapshot(doc(fbDb,'groups',G.groupId),function(d){
+      if(!d.exists()){ kicked(); return; }
+      var g=d.data(); G.code=g.code; state.places=Array.isArray(g.places)?g.places:[];
+      if(state.onMap)refreshMap();
+    },function(){});
+  }
+  function kicked(){ if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); G.groups.splice(G.active,1); if(!G.groups.length){ clearLocal(); toast(t('removed')); setTimeout(function(){location.reload();},1400); return; } G.active=0; applyActive(); saveLocal(); toast(t('removed')); state.liveDocs={}; subscribeFB(); writeMyDoc(true); refreshMap(); }
+  function switchGroup(i){ if(i<0||i>=G.groups.length||i===G.active)return; G.active=i; applyActive(); saveLocal(); state.selected=null; state.filter='all'; state.liveDocs={}; if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); subscribeFB(); writeMyDoc(true); refreshMap(); }
+  function addGroup(){ var mn=document.getElementById('gbMenu'); if(mn)mn.classList.remove('show'); state_action='create'; document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='create');}); document.getElementById('joinFields').style.display='none'; document.getElementById('gnameField').style.display=''; if(nameInput)nameInput.value=state.name; document.getElementById('gnameInput').value=''; document.getElementById('codeInput').value=''; refreshStart(); document.getElementById('mapscreen').classList.remove('active'); document.getElementById('onboard').classList.add('active'); }
+  function renderGroupBar(){ var cur=G.groups[G.active]; var nm=document.getElementById('gbName'); if(nm)nm.textContent=cur?cur.name:'—'; var menu=document.getElementById('gbMenu'); if(!menu)return; menu.innerHTML=''; G.groups.forEach(function(m,i){ var it=document.createElement('button'); it.className='gb-item'+(i===G.active?' on':''); it.innerHTML='<span>'+m.name+'</span><small>'+(m.role==='Admin'?'Admin':m.mode)+'</small>'; it.addEventListener('click',function(){ menu.classList.remove('show'); switchGroup(i); }); menu.appendChild(it); }); var add=document.createElement('button'); add.className='gb-add'; add.textContent=t('addGroup'); add.addEventListener('click',addGroup); menu.appendChild(add); }
+  async function removeMember(uid){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',uid)); }catch(e){} }
+  async function setMemberGroup(uid,g){ try{ await updateDoc(doc(fbDb,'groups',G.groupId,'members',uid),{group:g}); }catch(e){} }
+  async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} G.groups.splice(G.active,1); if(!G.groups.length){ clearLocal(); location.reload(); return; } G.active=0; applyActive(); saveLocal(); state.selected=null; state.filter='all'; state.liveDocs={}; subscribeFB(); writeMyDoc(true); refreshMap(); }
+  async function savePlaces(){ try{ await updateDoc(doc(fbDb,'groups',G.groupId),{places:state.places}); }catch(e){} }
+  var geoWatch=null;
+  function applyFix(lat,lng){
+    var firstFix=!state.hasFix; state.hasFix=true;
+    placeYou({lat:lat,lng:lng}, firstFix);   // recenter on first good fix
+    if(firstFix) toast(t('tFound'));
+    if(state.live) writeMyDoc(false);
+    draw();
+  }
+  function trackYou(){
+    if(!navigator.geolocation){toast(t('tNoGps'));return;}
+    if(geoWatch!=null) return;
+    geoWatch=navigator.geolocation.watchPosition(
+      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+      function(){
+        if(state.hasFix) return;
+        // high-accuracy failed/timed out — try a looser fix once
+        navigator.geolocation.getCurrentPosition(
+          function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+          function(){ toast(t('tNoGps')); },
+          {enableHighAccuracy:false,timeout:15000,maximumAge:60000});
+      },
+      {enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  }
+  function forceLocate(){
+    if(!navigator.geolocation){toast(t('tNoGps'));return;}
+    toast(t('tGetting'));
+    navigator.geolocation.getCurrentPosition(
+      function(pos){ state.hasFix=true; placeYou({lat:pos.coords.latitude,lng:pos.coords.longitude},true); if(state.live)writeMyDoc(true); draw(); toast(t('tFound')); },
+      function(){ toast(t('tNoGps')); },
+      {enableHighAccuracy:true,timeout:15000,maximumAge:0});
+  }
+
+  /* ================= enter map ================= */
+  var wired=false;
+  function enterMap(){
+    MM.init(); state.onMap=true; state.live=true;
+    refreshMap(); toast(t('tGetting'));
+    placeYou(FALLBACK,false); draw();   // provisional until GPS fix arrives
+    subscribeFB(); writeMyDoc(true); trackYou();
+    wireMap();
+  }
+  function wireMap(){
+    if(wired)return; wired=true;
+    $('shareSwitch').addEventListener('click',function(){
+      state.sharing=!state.sharing;
+      if(state.sharing) state.consent=true;   // turning sharing on IS the consent
+      MM.setMe(state.youLatLng,state.sharing);
+      toast(state.sharing?t('tOn'):t('tOff'));
+      writeMyDoc(true); refreshMap();
+    });
+    $('recenter').addEventListener('click',function(){ if(state.hasFix&&state.youLatLng){MM.setView(state.youLatLng.lat,state.youLatLng.lng,15);} else {forceLocate();} });
+    $('gbCur').addEventListener('click',function(e){ e.stopPropagation(); $('gbMenu').classList.toggle('show'); });
+    document.addEventListener('click',function(){ var mn=$('gbMenu'); if(mn)mn.classList.remove('show'); });
+
+    function shareInvite(group){
+      var link=location.origin+location.pathname+'?code='+(G.code||'')+'&g='+group;
+      var gl=(state.lang==='fil'?(group==='Family'?'Pamilya':'Team'):group);
+      var msg=(state.lang==='fil'?('Sumali sa SetupGo Locate ('+gl+') group ko! I-tap ang link para magkakita tayo sa map: '):('Join my SetupGo Locate ('+gl+') group! Tap the link to share location on the map: '))+link;
+      try{ if(navigator.share){ navigator.share({title:'SetupGo Locate',text:msg}); return; } }catch(e){}
+      try{ navigator.clipboard.writeText(msg); }catch(e){}
+      toast(t('codeCopied'));
+    }
+    $('shareFam').addEventListener('click',function(){ shareInvite('Family'); });
+    $('shareTeam').addEventListener('click',function(){ shareInvite('Team'); });
+    $('leaveBtn').addEventListener('click',function(){ if(confirm(t('leaveGroup')+'?')) leaveGroup(); });
+    document.querySelectorAll('#filterTabs button').forEach(function(b){ b.addEventListener('click',function(){ state.filter=b.dataset.filter; refreshMap(); }); });
+    document.querySelectorAll('#showToRow .st-chips button').forEach(function(b){ b.addEventListener('click',function(){ var g=b.dataset.st,i=state.showTo.indexOf(g); if(i>=0)state.showTo.splice(i,1); else state.showTo.push(g); writeMyDoc(true); refreshMap(); }); });
+
+    $('grab').addEventListener('click',function(){
+      var open=$('sheet').classList.toggle('expanded');
+      $('mapscreen').classList.toggle('sheet-open',open);
+    });
+
+    $('sosBtn').addEventListener('click',function(){
+      state.sos=!state.sos;
+      if(state.sos&&!state.sharing){state.sharing=true;}
+      MM.setMe(state.youLatLng,state.sharing);
+      toast(state.sos?t('sosOn'):t('sosOff'));
+      writeMyDoc(true); refreshMap();
+    });
+
+    var pmRadius=500;
+    function openPM(){
+      $('pmTitle').textContent=t('pmTitle');$('pmName').placeholder=t('placeNamePh');$('pmHint').textContent=t('pmHint');
+      $('pmCancel').textContent=t('cancel');$('pmSave').textContent=t('save');$('pmName').value='';pmRadius=500;
+      document.querySelectorAll('#pmRadius button').forEach(function(b){b.classList.toggle('sel',+b.dataset.r===pmRadius);});
+      $('placeModal').classList.add('show');
+    }
+    $('addPlaceBtn').addEventListener('click',openPM);
+    document.querySelectorAll('#pmRadius button').forEach(function(b){b.addEventListener('click',function(){pmRadius=+b.dataset.r;document.querySelectorAll('#pmRadius button').forEach(function(x){x.classList.remove('sel');});b.classList.add('sel');});});
+    $('pmCancel').addEventListener('click',function(){$('placeModal').classList.remove('show');});
+    $('pmSave').addEventListener('click',function(){
+      var nm=$('pmName').value.trim()||(state.lang==='fil'?'Lugar':'Place');
+      state.places.push({id:'p'+Date.now(),name:nm,lat:MM.cLat,lng:MM.cLng,radius:pmRadius});
+      $('placeModal').classList.remove('show'); draw(); savePlaces();
+    });
+  }
+
+  var toTimer;
+  function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toTimer);toTimer=setTimeout(function(){el.classList.remove('show');},2400);}
+
+  /* ================= init ================= */
+  applyI18n();
+  nameInput=$('nameInput');startBtn=$('startBtn');consentToggle=$('consentToggle');
+  consentToggle.addEventListener('click',function(){state.consent=!state.consent;consentToggle.classList.toggle('on',state.consent);refreshStart();});
+  nameInput.addEventListener('input',refreshStart);
+  $('codeInput').addEventListener('input',refreshStart);
+
+  function gotoMap(){ $('welcome').classList.remove('active'); $('onboard').classList.remove('active'); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
+
+  async function doStart(){
+    if(!G.ready||!G.uid){ toast(t('connecting')); return; }
+    state.name=nameInput.value.trim(); if(!state.name)return;
+    startBtn.disabled=true;
+    try{
+      var gid,code,role,mode,gname;
+      if(state_action==='create'){
+        gname=($('gnameInput').value.trim())||(state.name+"'s group");
+        code=genCode(); var gref=doc(collection(fbDb,'groups'));
+        await setDoc(gref,{name:gname,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
+        gid=gref.id; role='Admin'; mode=state.mode||'Team';
+      }else{
+        var ic=$('codeInput').value.trim().toUpperCase();
+        var qs=await getDocs(query(collection(fbDb,'groups'),where('code','==',ic)));
+        if(qs.empty){ toast(t('badCode')); startBtn.disabled=false; return; }
+        var gd=qs.docs[0]; gid=gd.id; code=ic; gname=gd.data().name||'Group';
+        role=(gd.data().adminId===G.uid)?'Admin':'Member'; mode=state.mode||'Team';
+        var msnap=await getDocs(collection(fbDb,'groups',gid,'members'));
+        var nmlc=state.name.trim().toLowerCase(), clash=false;
+        msnap.forEach(function(d){ if(d.id!==G.uid && ((d.data().name||'').trim().toLowerCase()===nmlc)) clash=true; });
+        if(clash){ toast(t('nameTaken')); startBtn.disabled=false; return; }
+      }
+      var exist=-1; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===gid){exist=i;break;} }
+      var mem={id:gid,code:code,role:role,mode:mode,name:gname};
+      if(exist>=0){ G.groups[exist]=mem; G.active=exist; } else { G.groups.push(mem); G.active=G.groups.length-1; }
+      state.sharing=state.consent; applyActive(); saveLocal();
+      await setDoc(doc(fbDb,'groups',gid,'members',G.uid), myMemberDoc(), {merge:true});
+      $('onboard').classList.remove('active'); $('mapscreen').classList.add('active');
+      if(state.onMap){ state.selected=null; state.filter='all'; state.liveDocs={}; subscribeFB(); writeMyDoc(true); refreshMap(); }
+      else { setTimeout(enterMap,120); }
+    }catch(e){ toast(t('errJoin')); startBtn.disabled=false; }
+  }
+  startBtn.addEventListener('click',doStart);
+
+  function applyDeepLink(){
+    var pc=null,pg=null; try{var p=new URLSearchParams(location.search);pc=p.get('code');pg=p.get('g');}catch(e){}
+    if(!pc) return false;
+    state_action='join';
+    document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='join');});
+    $('joinFields').style.display='';
+    $('codeInput').value=pc.toUpperCase();
+    if(pg==='Family'||pg==='Team'){
+      state.mode=pg;
+      $('modeField').style.display='none'; $('modeLocked').style.display='';
+      $('modeLockIc').textContent=pg==='Family'?'👨‍👩‍👧‍👦':'👷';
+      $('modeLockText').textContent=groupLabel(pg);
+    }
+    refreshStart();
+    return true;
+  }
+
+  // Firebase auth + resume saved group / deep link
+  signInAnonymously(fbAuth).catch(function(){});
+  onAuthStateChanged(fbAuth,function(user){
+    if(!user)return; G.uid=user.uid; G.ready=true;
+    var arr=[],act=0,nm='';
+    try{ arr=JSON.parse(localStorage.getItem('sgb_groups')||'[]'); act=parseInt(localStorage.getItem('sgb_active')||'0',10); nm=localStorage.getItem('sgb_name')||''; }catch(e){}
+    if(arr&&arr.length){
+      state.name=nm; G.groups=arr; G.active=(act>=0&&act<arr.length)?act:0; applyActive();
+      gotoMap();
+    } else if(applyDeepLink()){
+      $('welcome').classList.remove('active'); $('onboard').classList.add('active');
+      try{ nameInput.focus(); }catch(e){}
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
