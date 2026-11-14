@@ -45,20 +45,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease;z-index:5;}
 .screen.active{opacity:1;pointer-events:auto;}
 
-#welcome{background:radial-gradient(900px 520px at 80% -10%,rgba(244,63,94,.26),transparent 60%),radial-gradient(900px 620px at -10% 110%,rgba(245,158,11,.2),transparent 55%),var(--navy-900);padding:0;justify-content:space-between;}
+#welcome{background:radial-gradient(900px 520px at 80% -10%,rgba(244,63,94,.26),transparent 60%),radial-gradient(900px 620px at -10% 110%,rgba(245,158,11,.2),transparent 55%),var(--navy-800);padding:0;justify-content:center;overflow-y:auto;}
 .wc-lang{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:6;}
-.wc-inner{flex:1;overflow-y:auto;padding:38px 24px 10px;display:flex;flex-direction:column;}
-.wc-logo{display:flex;justify-content:center;margin-bottom:16px;}
-.wc-h1{font-size:28px;line-height:1.18;text-align:center;font-weight:800;letter-spacing:-.4px;margin:30px 0 12px;}
+.wc-inner{flex:none;padding:28px 24px 6px;display:flex;flex-direction:column;}
+.wc-logo{display:flex;justify-content:center;margin-bottom:12px;}
+.wc-h1{font-size:26px;line-height:1.18;text-align:center;font-weight:800;letter-spacing:-.4px;margin:18px 0 10px;}
 .wc-h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
-.wc-sub{text-align:center;color:var(--ink-dim);font-size:14.5px;line-height:1.55;margin:0 auto;max-width:330px;}
-.notice-card{margin-top:30px;border:1px solid var(--line);border-radius:22px;background:var(--navy-800);padding:8px 16px;}
-.nc-row{display:flex;gap:14px;align-items:center;padding:15px 2px;}
+.wc-sub{text-align:center;color:var(--ink-dim);font-size:14px;line-height:1.5;margin:0 auto;max-width:330px;}
+.notice-card{margin-top:18px;border:1px solid var(--line);border-radius:20px;background:var(--navy-700);padding:6px 16px;}
+.nc-row{display:flex;gap:14px;align-items:center;padding:12px 2px;}
 .nc-row+.nc-row{border-top:1px solid var(--line);}
 .nc-ic{width:44px;height:44px;border-radius:14px;background:var(--grad-soft);display:grid;place-items:center;font-size:21px;flex:none;}
 .nc-row b{display:block;font-size:14.5px;font-weight:700;margin-bottom:2px;}
 .nc-row span{display:block;font-size:12.5px;color:var(--ink-dim);line-height:1.4;}
-.wc-foot{padding:14px 24px calc(22px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--navy-900) 30%);}
+.wc-foot{flex:none;padding:16px 24px calc(20px + env(safe-area-inset-bottom));}
 
 #onboard{background:radial-gradient(900px 500px at 80% -10%,rgba(244,63,94,.2),transparent 60%),var(--navy-900);padding:26px 22px calc(26px + env(safe-area-inset-bottom));overflow-y:auto;}
 #adminlogin{background:radial-gradient(1100px 640px at 50% -12%,rgba(244,63,94,.20),transparent 58%),radial-gradient(1000px 640px at 50% 118%,rgba(245,158,11,.14),transparent 58%),var(--navy-800);padding:24px;overflow-y:auto;justify-content:center;align-items:center;}
@@ -1115,7 +1115,8 @@ const fbDb = getFirestore(fbApp);
     refreshStart(); try{ nameInput.focus(); }catch(e){}
   }
   /* ===== Multi-group manager (business) ===== */
-  async function loadMyGroups(go){
+  function showWelcome(){ ['onboard','adminlogin','mapscreen'].forEach(function(s){$(s).classList.remove('active');}); $('welcome').classList.add('active'); }
+  async function loadMyGroups(go, fromLogin){
     try{
       lmsg('4 Hinahanap ang mga grupo mo…');
       var ex=await getDocs(query(collection(fbDb,'groups'),where('adminId','==',G.uid)));
@@ -1128,8 +1129,8 @@ const fbDb = getFirestore(fbApp);
         var idx=0; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===want){idx=i;break;} }
         lmsg('5 Nakita! Pumapasok…');
         await activateGroup(idx, go!==false);
-      } else { lmsg('5b Walang grupo — gagawa…'); goOnboardCreate(); }
-    }catch(e){ lmsg('ERR grp: '+((e&&e.code)||e)); goOnboardCreate(); }
+      } else { if(fromLogin){ goOnboardCreate(); } else { showWelcome(); } }   // fresh visitor → welcome landing first
+    }catch(e){ if(fromLogin){ goOnboardCreate(); } else { showWelcome(); } }
   }
   async function activateGroup(i, go){
     if(i<0||i>=G.groups.length) return;
@@ -1182,7 +1183,7 @@ const fbDb = getFirestore(fbApp);
     G.uid=u.uid; G.ready=true; G.email=u.email||null; booted=true;
     try{localStorage.removeItem('sgb_active');}catch(e){}
     clearLocal();              // explicit admin login overrides any stale member context on this device
-    await loadMyGroups(true);
+    await loadMyGroups(true, true);
   }
   function lmsg(s){ var e=$('loginMsg'); if(e) e.textContent=s; }
   async function adminSignIn(){
@@ -1289,7 +1290,7 @@ const fbDb = getFirestore(fbApp);
       try{ state.name=localStorage.getItem('sgb_name')||''; state.role='Member'; state.mode=localStorage.getItem('sgb_mode')||'Team'; G.groupId=savedG; G.code=localStorage.getItem('sgb_code')||''; }catch(e){}
       gotoMap();
     } else {                              // manager — load every group they own (or create the first)
-      loadMyGroups(true);
+      loadMyGroups(true, false);
     }
   });
 
