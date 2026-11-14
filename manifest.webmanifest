@@ -1,7 +1,7 @@
 {
   "name": "SetupGo Locate Business",
   "short_name": "SetupGo Biz",
-  "description": "Consent-based location sharing for family and team.",
+  "description": "Consent-based location sharing — manage multiple groups.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

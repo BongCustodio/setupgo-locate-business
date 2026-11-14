@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>SetupGo Locate Business — Multi-group Location Sharing</title>
+<title>SetupGo Locate Business — Consent-Based Location Sharing</title>
 <meta name="theme-color" content="#0b1020">
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
@@ -86,6 +86,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn{width:100%;padding:17px;border:none;border-radius:16px;font-size:16px;font-weight:800;background:var(--grad);color:#fff;cursor:pointer;margin-top:22px;letter-spacing:.2px;box-shadow:0 14px 30px -10px rgba(244,63,94,.6);transition:.2s;}
 .btn:disabled{opacity:.4;box-shadow:none;cursor:not-allowed;}
 .btn:active:not(:disabled){transform:translateY(1px);}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;}
+.btn-link{width:100%;margin-top:14px;background:transparent;border:none;color:var(--rose,#ff7a9c);font-size:14px;font-weight:700;cursor:pointer;padding:8px;}
+.wc-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:13px 20px;border:1px solid var(--line);border-radius:14px;background:var(--navy-800);color:var(--ink);font-size:15px;font-weight:700;text-decoration:none;transition:.15s;-webkit-tap-highlight-color:transparent;}
+.wc-link:active{background:var(--navy-700);transform:translateY(1px);}
+.btn-row{display:flex;gap:10px;}
+.btn-row .btn{margin-top:22px;}
+.acct-row{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--navy-800);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.acct-row .ai{font-size:12.5px;color:var(--ink-faint);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.acct-row button{flex:none;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:12.5px;cursor:pointer;}
+.acct-row.secure{flex-direction:column;align-items:stretch;}
+.acct-row.secure button{width:100%;background:var(--grad);color:#fff;border:none;padding:12px;font-size:13.5px;}
+.acct-row.secure .sh{font-size:11.5px;color:var(--ink-faint);text-align:center;margin-top:6px;}
 .legal{text-align:center;font-size:11.5px;color:var(--ink-faint);margin-top:14px;line-height:1.5;}
 
 /* ---- mini map ---- */
@@ -140,6 +152,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .inv-sbtn{flex:1;border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12.5px;padding:11px 8px;border-radius:12px;cursor:pointer;}
 .mem-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-600);color:var(--ink-dim);font-size:14px;cursor:pointer;flex:none;margin-left:4px;}
 .leave-btn{margin-top:14px;width:100%;padding:13px;border-radius:14px;border:1px solid rgba(239,68,68,.4);background:transparent;color:#f87171;font-weight:700;font-size:13.5px;cursor:pointer;}
+.gps-wait{color:var(--amber,#f59e0b);font-weight:700;font-size:12px;}
 .filtertabs{display:flex;gap:6px;background:var(--navy-700);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:10px;}
 .filtertabs button{flex:1;border:none;background:transparent;color:var(--ink-dim);font-size:12.5px;font-weight:700;padding:8px 6px;border-radius:10px;cursor:pointer;}
 .filtertabs button.sel{background:var(--grad);color:#fff;}
@@ -170,6 +183,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .topbar .t .s{font-size:11.5px;color:var(--ink-dim);display:flex;align-items:center;gap:6px;}
 .modepill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--grad-soft);color:var(--ink);border:1px solid rgba(244,63,94,.35);text-transform:uppercase;letter-spacing:.5px;}
 .topbar .langtog{transform:scale(.9);transform-origin:right center;}
+/* group switcher */
+.groupbar{position:absolute;top:calc(60px + env(safe-area-inset-top));left:14px;z-index:11;}
+.gb-cur{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:13px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);max-width:72vw;}
+.gb-cur .gb-ic{font-size:14px;}
+.gb-cur #gbName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gb-cur .gb-car{color:var(--ink-faint);font-size:11px;}
+.gb-menu{display:none;margin-top:6px;background:var(--navy-800);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7);overflow:hidden;min-width:220px;max-width:80vw;max-height:60vh;overflow-y:auto;}
+.gb-menu.open{display:block;}
+.gb-item{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--line);}
+.gb-item:last-child{border-bottom:none;}
+.gb-item:active{background:var(--navy-700);}
+.gb-item.sel{background:rgba(244,63,94,.12);}
+.gb-item .gi-dot{width:8px;height:8px;border-radius:50%;background:var(--grad);flex:none;}
+.gb-item .gi-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;}
+.gb-item .gi-code{font-size:11px;color:var(--ink-faint);letter-spacing:1px;}
+.gb-add{color:var(--rose,#ff7a9c);font-weight:800;justify-content:center;}
+@media(min-width:860px){.groupbar{top:84px;left:20px;}}
 .recenter{position:absolute;right:16px;bottom:180px;z-index:10;width:48px;height:48px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:20px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);}
 .recenter:active{transform:scale(.95);}
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:10;background:var(--navy-800);border-top-left-radius:26px;border-top-right-radius:26px;border-top:1px solid var(--line);box-shadow:0 -20px 50px -20px rgba(0,0,0,.7);padding:4px 16px calc(14px + env(safe-area-inset-bottom));max-height:82dvh;display:flex;flex-direction:column;transition:max-height .25s ease;}
@@ -194,7 +224,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .list-head{display:flex;align-items:center;justify-content:space-between;margin:2px 4px 10px;}
 .list-head .h{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-faint);font-weight:700;}
 .list-head .c{font-size:12px;color:var(--ink-dim);}
-.members{overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding-bottom:4px;}
+.members{display:flex;flex-direction:column;gap:9px;padding-bottom:4px;flex:0 0 auto;}
 .member{display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:16px;background:var(--navy-700);border:1px solid var(--line);cursor:pointer;transition:.15s;}
 .member:active{background:var(--navy-600);}
 .av{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-weight:800;color:#fff;font-size:16px;flex:none;position:relative;}
@@ -216,18 +246,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .connbadge .d{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
 .connbadge.live{color:var(--green);border-color:rgba(52,211,153,.4);}
 .connbadge.live .d{background:var(--green);box-shadow:0 0 6px var(--green);}
-.groupbar{position:relative;margin-bottom:10px;}
-.gb-cur{width:100%;display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-weight:800;font-size:14.5px;cursor:pointer;}
-.gb-cur .gb-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex:none;}
-.gb-cur #gbName{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.gb-cur .gb-ch{color:var(--ink-faint);}
-.gb-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;background:var(--navy-800);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:8px;max-height:50dvh;overflow-y:auto;}
-.gb-menu.show{display:block;}
-.gb-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;border:none;background:transparent;color:var(--ink);border-radius:11px;cursor:pointer;font-size:14px;font-weight:600;text-align:left;}
-.gb-item:hover{background:var(--navy-700);}
-.gb-item.on{background:var(--grad-soft);box-shadow:0 0 0 1px rgba(244,63,94,.4) inset;}
-.gb-item small{color:var(--ink-dim);font-size:11px;font-weight:700;text-transform:uppercase;flex:none;}
-.gb-add{width:100%;margin-top:4px;padding:11px;border:1px dashed rgba(244,63,94,.5);background:var(--grad-soft);color:var(--ink);border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;}
 
 @media(max-width:859px){
   .sheet:not(.expanded) .sheet-body{display:none;}
@@ -240,7 +258,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   .sheet{left:auto;right:18px;top:84px;bottom:18px;width:400px;max-height:none;border-radius:24px;border:1px solid var(--line);}
   .sheet-body{display:flex!important;}
   .grab{display:none;}
-  .members{flex:1;}
+  .members{flex:1;overflow-y:auto;min-height:0;}
   .recenter{bottom:auto;top:96px;right:436px;}
   .connbadge{bottom:20px;}
   .sosalert{left:18px;right:432px;top:88px;}
@@ -256,7 +274,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="wc-lang"><div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div></div>
     <div class="wc-inner">
       <div class="wc-logo"><div class="logo big"><span>S</span></div></div>
-      <div class="brand-name" style="text-align:center;font-size:22px;"><b>SetupGo</b> Locate</div>
+      <div class="brand-name" style="text-align:center;font-size:22px;"><b>SetupGo</b> Locate <span style="opacity:.7;font-weight:600">Business</span></div>
       <div class="faint" style="text-align:center;font-size:12.5px;margin-top:4px;" data-i18n="tagline"></div>
       <h1 class="wc-h1" data-i18n-html="hero"></h1>
       <p class="wc-sub" data-i18n="heroSub"></p>
@@ -268,8 +286,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
     <div class="wc-foot">
       <button id="welcomeBtn" class="btn" style="margin-top:0;" data-i18n="getStarted"></button>
-      <div class="legal" data-i18n-html="legal"></div>
+      <button id="adminLoginBtn" class="btn-link" data-i18n="adminLoginBtn"></button>
+      <div style="display:flex;justify-content:center;gap:12px;margin-top:16px;flex-wrap:wrap;">
+        <a href="guide.html" class="wc-link" data-i18n="howToUse"></a>
+        <a href="https://www.facebook.com/profile.php?id=61596429292499" target="_blank" rel="noopener" class="wc-link">SetupGo ↗</a>
+      </div>
+      <div class="legal" data-i18n-html="legal" style="margin-top:18px;"></div>
     </div>
+  </section>
+
+  <!-- ADMIN LOGIN -->
+  <section id="adminlogin" class="screen">
+    <div class="ob-top">
+      <div class="logo"><span>S</span></div>
+      <div style="flex:1;">
+        <div class="brand-name" data-i18n="loginTitle"></div>
+        <div class="faint" style="font-size:12px;" data-i18n="loginSub"></div>
+      </div>
+      <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label class="label" data-i18n="qEmail"></label>
+      <input id="loginEmail" class="input" type="email" data-i18n-ph="emailPh" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label class="label" data-i18n="qPass"></label>
+      <input id="loginPass" class="input" type="password" data-i18n-ph="passPh" autocomplete="current-password" />
+    </div>
+    <div class="btn-row">
+      <button id="loginSignIn" class="btn" data-i18n="btnSignIn"></button>
+      <button id="loginSignUp" class="btn ghost" data-i18n="btnSignUp"></button>
+    </div>
+    <div id="loginMsg" style="text-align:center;font-size:13px;color:var(--amber,#f59e0b);min-height:18px;margin-top:12px;font-weight:700;"></div>
+    <button id="loginForgot" class="btn-link" data-i18n="forgotPw" style="margin-top:6px;"></button>
+    <button id="loginBack" class="btn-link" data-i18n="loginBack"></button>
+    <div class="legal" data-i18n="loginHint" style="margin-top:4px;"></div>
   </section>
 
   <!-- SETUP -->
@@ -277,7 +328,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="ob-top">
       <div class="logo"><span>S</span></div>
       <div style="flex:1;">
-        <div class="brand-name"><b>SetupGo</b> Locate</div>
+        <div class="brand-name"><b>SetupGo</b> Locate <span style="opacity:.7;font-weight:600">Business</span></div>
         <div class="faint" style="font-size:12px;" data-i18n="setupSub"></div>
       </div>
       <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
@@ -293,9 +344,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="mode" data-act="join"><div class="ic">🔑</div><h3 data-i18n="actJoinT"></h3><p data-i18n="actJoinD"></p></div>
       </div>
     </div>
-    <div class="field" id="gnameField">
+    <div class="field" id="createFields">
       <label class="label" data-i18n="qGroupName"></label>
-      <input id="gnameInput" class="input" data-i18n-ph="gnamePh" autocomplete="off" />
+      <input id="gnameInput" class="input" data-i18n-ph="groupNamePh" autocomplete="off" />
     </div>
     <div id="joinFields" style="display:none;">
       <div class="field">
@@ -328,16 +379,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="topbar">
       <div class="logo"><span>S</span></div>
       <div class="t">
-        <div class="n">SetupGo Locate</div>
+        <div class="n">SetupGo <b>Business</b></div>
         <div class="s"><span id="modePill" class="modepill">Team</span><span id="statusTxt"></span></div>
       </div>
       <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
+    </div>
+    <div class="groupbar" id="groupBar" style="display:none;">
+      <button class="gb-cur" id="gbCur"><span class="gb-ic">🏢</span><span id="gbName">Grupo</span><span class="gb-car">▾</span></button>
+      <div class="gb-menu" id="gbMenu"></div>
     </div>
     <div class="sosbtn" id="sosBtn">SOS</div>
     <div class="recenter" id="recenter">◎</div>
     <div class="sheet" id="sheet">
       <div class="grab" id="grab"><span class="grab-bar"></span></div>
-      <div class="groupbar" id="groupBar"><button class="gb-cur" id="gbCur"><span class="gb-dot"></span><span id="gbName">—</span><span class="gb-ch">▾</span></button><div class="gb-menu" id="gbMenu"></div></div>
       <div class="sharebar" id="sharebar">
         <div class="dot"></div>
         <div class="txt"><div class="a" id="shareTitle"></div><div class="b" id="shareSub"></div></div>
@@ -365,6 +419,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         </div>
         <div class="list-head"><div class="h" id="listLabel"></div><div class="c" id="onlineCount"></div></div>
         <div class="members" id="members"></div>
+        <div id="acctBox"></div>
         <button class="leave-btn" id="leaveBtn"></button>
       </div>
     </div>
@@ -394,7 +449,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, linkWithCredential, EmailAuthProvider, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -417,14 +472,15 @@ const fbDb = getFirestore(fbApp);
     fil:{
       tagline:"Consent-based location sharing",
       hero:"Alam mo kung nasaan<br>ang <em>importante sa'yo</em>",
-      heroSub:"Bawat miyembro mismo ang pumapayag na mag-share. Transparent, ligtas, at ikaw ang may kontrol.",
-      n1t:"Consent-based", n1d:"Ikaw mismo ang pumipili na mag-share — hindi palihim.",
-      n2t:"Laging malinaw", n2d:"Makikita mo kung kailan ka nagsa-share ng lokasyon.",
-      n3t:"Ikaw ang may kontrol", n3d:"Isang pindot lang para itigil ang sharing anumang oras.",
-      getStarted:"Magsimula →",
-      legal:"Sa pagpindot, sumasang-ayon ka sa consent-based sharing.<br>Para magkakita ang mga phone, buksan ang parehong link na naka-sign in.",
+      heroSub:"Ligtas na location sharing para sa pamilya at team.",
+      n1t:"Consent-based", n1d:"Ikaw ang pumipili — hindi palihim.",
+      n2t:"Laging malinaw", n2d:"Alam mo kung kailan ka naka-share.",
+      n3t:"Ikaw ang kontrol", n3d:"Isang pindot para itigil.",
+      getStarted:"Magsimula →", howToUse:"📖 Paano gamitin?",
+      legal:"Sa pagpindot, sumasang-ayon ka sa consent-based sharing.",
       setupSub:"I-setup ang profile mo",
       qName:"Ano ang pangalan mo?", namePh:"hal. Fernando",
+      qGroupName:"Pangalan ng grupo", groupNamePh:"hal. Team Cavite, Pamilya Custodio",
       qRole:"Ano ang role mo?",
       roleAdminT:"Admin", roleAdminD:"Nakikita ang lahat ng member at lokasyon nila.",
       roleMemberT:"Member", roleMemberD:"Nakikita mo ang ibang member (peer-to-peer).",
@@ -450,6 +506,7 @@ const fbDb = getFirestore(fbApp);
       emptyLive:"Wala pang ibang member na nakabukas. Ipabukas sa kanila ang parehong link para lumitaw sila rito.",
       tGetting:"Kinukuha ang iyong lokasyon…", tFound:"Nakita ang iyong lokasyon ✓",
       tNoGps:"Walang GPS access — hindi ka makikita hangga't hindi pinapayagan", tOn:"Naka-on ang sharing ✓", tOff:"Itinigil ang sharing",
+      errDenied:"Na-block ang location — i-allow sa 🔒 sa address bar, tapos i-reload", errGps:"Hinahanap pa ang GPS — subukang lumabas sa mas bukas na lugar", gpsWait:"⏳ GPS…",
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
       pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"Ilalagay sa kasalukuyang gitna ng map", save:"I-save", cancel:"Kanselahin",
@@ -459,20 +516,27 @@ const fbDb = getFirestore(fbApp);
       qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit", nameTaken:"Ginamit na ang pangalang ito sa grupo — magdagdag ng initial ng apelyido (hal. Fernando C.)",
       invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", shareBtn:"Ibahagi", codeCopied:"Nakopya ang invite link ✓",
       inviteFam:"📨 Imbita sa Pamilya", inviteTeam:"📨 Imbita sa Team", joiningLabel:"Sasali ka sa grupong:",
-      qGroupName:"Pangalan ng grupo (customer o team)", gnamePh:"hal. Pamilya Custodio, IMI Team", addGroup:"＋ Magdagdag / Sumali sa grupo",
-      leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:"
+      leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:",
+      adminLoginBtn:"May admin account? Mag-login →", loginTitle:"Admin login", loginSub:"Mag-login para maging admin ka sa LAHAT ng device mo (PC at phone).",
+      qEmail:"Email", emailPh:"ikaw@email.com", qPass:"Password", passPh:"kahit 6 na karakter",
+      btnSignIn:"Mag-login", btnSignUp:"Gumawa ng account", loginBack:"← Bumalik",
+      loginHint:"Members: hindi n'yo kailangan ito — gamitin lang ang invite link mula sa admin.",
+      loginErr:"Maling email o password", signupErr:"Hindi magawa ang account — baka ginamit na ang email o maikli ang password",
+      secureEmail:"🔒 I-secure sa email", secureHint:"para admin ka sa lahat ng device", adminAs:"Admin:", logoutBtn:"Mag-logout",
+      forgotPw:"Nakalimutan ang password?", needEmail:"Ilagay muna ang email mo sa taas", resetSent:"Padala na ang reset link sa email mo — i-check ang inbox (at spam)", resetErr:"Hindi mahanap ang email na ito"
     },
     en:{
       tagline:"Consent-based location sharing",
       hero:"Know where the people<br>who <em>matter to you</em> are",
-      heroSub:"Every member chooses to share. Transparent, safe, and you stay in control.",
-      n1t:"Consent-based", n1d:"You choose to share — never in secret.",
-      n2t:"Always clear", n2d:"You can see whenever you're sharing your location.",
-      n3t:"You're in control", n3d:"One tap to stop sharing anytime.",
-      getStarted:"Get started →",
-      legal:"By continuing, you agree to consent-based sharing.<br>For phones to see each other, open the same link while signed in.",
+      heroSub:"Safe location sharing for family and team.",
+      n1t:"Consent-based", n1d:"You choose — never in secret.",
+      n2t:"Always clear", n2d:"You see when you're sharing.",
+      n3t:"You're in control", n3d:"One tap to stop.",
+      getStarted:"Get started →", howToUse:"📖 How to use?",
+      legal:"By continuing, you agree to consent-based sharing.",
       setupSub:"Set up your profile",
       qName:"What's your name?", namePh:"e.g. Fernando",
+      qGroupName:"Group name", groupNamePh:"e.g. Team Cavite, Custodio Family",
       qRole:"What's your role?",
       roleAdminT:"Admin", roleAdminD:"See every member and their location.",
       roleMemberT:"Member", roleMemberD:"See other members (peer-to-peer).",
@@ -498,6 +562,7 @@ const fbDb = getFirestore(fbApp);
       emptyLive:"No other members are open yet. Have them open the same link to appear here.",
       tGetting:"Getting your location…", tFound:"Location found ✓",
       tNoGps:"No GPS access — you won't be visible until you allow it", tOn:"Sharing is on ✓", tOff:"Sharing stopped",
+      errDenied:"Location is blocked — allow it via the 🔒 in the address bar, then reload", errGps:"Still finding GPS — try moving to a more open spot", gpsWait:"⏳ GPS…",
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
       pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"Placed at the current map center", save:"Save", cancel:"Cancel",
@@ -507,8 +572,14 @@ const fbDb = getFirestore(fbApp);
       qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again", nameTaken:"That name is already used — add a surname initial (e.g. Fernando C.)",
       invite:"Invite code — share with team/family", copyCode:"Copy", shareBtn:"Share", codeCopied:"Invite link copied ✓",
       inviteFam:"📨 Invite to Family", inviteTeam:"📨 Invite to Team", joiningLabel:"You'll join:",
-      qGroupName:"Group name (customer or team)", gnamePh:"e.g. Custodio Family, IMI Team", addGroup:"＋ Add / Join a group",
-      leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:"
+      leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:",
+      adminLoginBtn:"Have an admin account? Log in →", loginTitle:"Admin login", loginSub:"Log in to be admin on ALL your devices (PC and phone).",
+      qEmail:"Email", emailPh:"you@email.com", qPass:"Password", passPh:"at least 6 characters",
+      btnSignIn:"Log in", btnSignUp:"Create account", loginBack:"← Back",
+      loginHint:"Members: you don't need this — just use the invite link from the admin.",
+      loginErr:"Wrong email or password", signupErr:"Couldn't create the account — email may be in use or the password is too short",
+      secureEmail:"🔒 Secure with email", secureHint:"to be admin on all devices", adminAs:"Admin:", logoutBtn:"Log out",
+      forgotPw:"Forgot your password?", needEmail:"Enter your email above first", resetSent:"Reset link sent to your email — check your inbox (and spam)", resetErr:"Can't find that email"
     }
   };
 
@@ -521,10 +592,10 @@ const fbDb = getFirestore(fbApp);
 
   /* ================= capabilities ================= */
   /* ================= Firebase group state ================= */
-  var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false,groups:[],active:-1};
-  function applyActive(){ var m=G.groups[G.active]; if(!m)return; G.groupId=m.id; G.code=m.code; state.role=m.role; state.mode=m.mode; G.joinedOnce=false; }
-  function clearLocal(){ try{['sgb_name','sgb_groups','sgb_active'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
-  function saveLocal(){ try{localStorage.setItem('sgb_name',state.name);localStorage.setItem('sgb_groups',JSON.stringify(G.groups));localStorage.setItem('sgb_active',String(G.active));}catch(e){} }
+  var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false,email:null,groups:[],active:-1};
+  var booted=false;
+  function clearLocal(){ try{['sgb_name','sgb_role','sgb_mode','sgb_group','sgb_code'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
+  function saveLocal(){ try{localStorage.setItem('sgb_name',state.name);localStorage.setItem('sgb_role',state.role);localStorage.setItem('sgb_mode',state.mode);localStorage.setItem('sgb_group',G.groupId);localStorage.setItem('sgb_code',G.code||'');}catch(e){} }
   function genCode(){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s; }
   function applyRoleUI(){}  // role is now decided by create/join, not identity
   var state_action='create';  // 'create' | 'join'
@@ -555,12 +626,21 @@ const fbDb = getFirestore(fbApp);
     document.querySelectorAll('[data-langtog]').forEach(function(tg){tg.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.lang===state.lang);});});
     document.documentElement.lang=state.lang;
   }
-  function setLang(l){state.lang=l;applyI18n();applyRoleUI();if(state.onMap)refreshMap();}
+  function setLang(l){state.lang=l;applyI18n();applyRoleUI();if(state.onMap)refreshMap();renderGroupBar();}
   document.querySelectorAll('[data-langtog] button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.lang);});});
 
   /* ================= onboarding ================= */
   $('welcomeBtn').addEventListener('click',function(){$('welcome').classList.remove('active');$('onboard').classList.add('active');});
-  document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';$('gnameField').style.display=(state_action==='create')?'':'none';refreshStart();});});
+  var loginFrom='welcome';
+  function showLogin(){
+    loginFrom=$('mapscreen').classList.contains('active')?'mapscreen':'welcome';
+    if(loginFrom==='mapscreen' && typeof collapseSheet==='function') collapseSheet();
+    ['welcome','onboard','mapscreen'].forEach(function(s){$(s).classList.remove('active');});
+    $('adminlogin').classList.add('active'); try{$('loginEmail').focus();}catch(e){}
+  }
+  $('adminLoginBtn').addEventListener('click',showLogin);
+  $('loginBack').addEventListener('click',function(){ $('adminlogin').classList.remove('active'); $(loginFrom).classList.add('active'); });
+  document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';$('createFields').style.display=(state_action==='create')?'':'none';refreshStart();});});
   document.querySelectorAll('[data-mode]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.mode=m.dataset.mode;});});
   var nameInput,startBtn,consentToggle;
   function refreshStart(){ var ok=nameInput.value.trim().length>0; if(state_action==='join'){ var c=$('codeInput'); ok=ok&&c&&c.value.trim().length>0; } startBtn.disabled=!ok; }
@@ -688,8 +768,22 @@ const fbDb = getFirestore(fbApp);
     if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('shareFam').textContent=t('inviteFam'); $('shareTeam').textContent=t('inviteTeam'); }
     else { inv.style.display='none'; }
     $('leaveBtn').textContent=t('leaveGroup');
-    renderGroupBar();
+    renderAcct();
     draw();
+  }
+  function renderAcct(){
+    var box=$('acctBox'); if(!box)return; box.innerHTML='';
+    if(state.role==='Admin' && !G.email){
+      var d=document.createElement('div'); d.className='acct-row secure';
+      var b=document.createElement('button'); b.textContent=t('secureEmail'); b.addEventListener('click',showLogin);
+      var h=document.createElement('div'); h.className='sh'; h.textContent=t('secureHint');
+      d.appendChild(b); d.appendChild(h); box.appendChild(d);
+    } else if(G.email){
+      var r=document.createElement('div'); r.className='acct-row';
+      var ai=document.createElement('div'); ai.className='ai'; ai.textContent=t('adminAs')+' '+G.email;
+      var lo=document.createElement('button'); lo.textContent=t('logoutBtn'); lo.addEventListener('click',function(){ if(confirm(t('logoutBtn')+'?')) doLogout(); });
+      r.appendChild(ai); r.appendChild(lo); box.appendChild(r);
+    }
   }
 
   function currentList(center){
@@ -704,7 +798,7 @@ const fbDb = getFirestore(fbApp);
         var sharing=!!o.sharing, hasLoc=(o.lat!=null&&o.lng!=null);
         var mins=(Date.now()-(o.ts||0))/60000;
         var status=!sharing?'offl':(mins<2?'on':(mins<15?'idle':'offl'));
-        out.push({id:id,name:o.name||'—',color:colorFor(id),tag:state.role==='Admin'?groupLabel(o.group):'',role:o.group||'',status:status,metaText:relTime(o.ts||0),sos:!!o.sos,_ll:(sharing&&hasLoc)?[o.lat,o.lng]:null});
+        out.push({id:id,name:o.name||'—',color:colorFor(id),tag:state.role==='Admin'?groupLabel(o.group):'',role:o.group||'',status:status,metaText:relTime(o.ts||0),sos:!!o.sos,_ll:(sharing&&hasLoc)?[o.lat,o.lng]:null,nogps:(sharing&&!hasLoc&&status!=='offl')});
       });
       out.sort(function(a,b){return (a.status==='offl')-(b.status==='offl');});
       return out;
@@ -728,13 +822,16 @@ const fbDb = getFirestore(fbApp);
     list.forEach(function(m){
       var el=document.createElement('div'); el.className='member';
       var sc=m.status==='on'?'':(m.status==='idle'?'idle':'offl');
-      var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—'));
+      var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.nogps?('<span class="gps-wait">'+t('gpsWait')+'</span>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—')));
       var xbtn=state.role==='Admin'?'<button class="mem-x" data-rm="1">✕</button>':'';
       var tagHtml=(state.role==='Admin'&&m.role)?' <button class="tag tag-btn">'+groupLabel(m.role)+' ⇄</button>':(m.tag?' <span class="tag">'+m.tag+'</span>':'');
       el.innerHTML='<div class="av" style="background:'+m.color+'">'+initials(m.name)+'<div class="on '+sc+'"></div></div>'+
         '<div class="info"><div class="nm">'+m.name+tagHtml+'</div>'+
         '<div class="meta">'+m.metaText+'</div></div><div class="dist">'+dist+'</div>'+xbtn;
-      el.addEventListener('click',function(){if(m._ll){selectMember(m.id);}});
+      el.addEventListener('click',function(){
+        if(m._ll){ collapseSheet(); MM.setView(m._ll[0],m._ll[1],16); selectMember(m.id); }
+        else { toast(m.name+' — '+t('gpsWait')); }
+      });
       if(state.role==='Admin'){
         var xb=el.querySelector('.mem-x'); if(xb) xb.addEventListener('click',function(e){e.stopPropagation(); if(confirm(t('removeQ')+m.name+'?')) removeMember(m.id); });
         var gb=el.querySelector('.tag-btn'); if(gb) gb.addEventListener('click',function(e){e.stopPropagation(); setMemberGroup(m.id, m.role==='Family'?'Team':'Family'); });
@@ -817,6 +914,7 @@ const fbDb = getFirestore(fbApp);
     if(state.live){ var h=state.history[m.id]; return (h&&h.length>=2)?h:null; }
     return synthTrail(m);
   }
+  function collapseSheet(){ $('sheet').classList.remove('expanded'); $('mapscreen').classList.remove('sheet-open'); }
   function selectMember(id){ if(id==='me'){state.selected=null;draw();return;} state.selected=id; var m=MM.byId[id]; if(m)MM.cLat=m.lat,MM.cLng=m.lng; draw(); }
   function renderSelBar(sel,center){
     var bar=$('selBar');
@@ -833,6 +931,7 @@ const fbDb = getFirestore(fbApp);
     var list=currentList(center);
     recordHistory(list);
     computePlaces(list);
+    declumpPins(list);
     var sel=state.selected?list.filter(function(m){return m.id===state.selected;})[0]:null;
     MM.setGeofences(state.places);
     MM.setTrail(sel?trailPoints(sel):null);
@@ -841,6 +940,24 @@ const fbDb = getFirestore(fbApp);
     renderMembers(center,list);
     renderSosBanner(list);
     renderSelBar(sel,center);
+  }
+  // Fan out pins that sit on (almost) the same spot, so co-located people don't hide under each other
+  function declumpPins(list){
+    var EPS=0.00020, R=0.00016;   // ~22m match radius, ~17m spread
+    var placed=[];
+    if(state.sharing&&state.youLatLng) placed.push({lat:state.youLatLng.lat,lng:state.youLatLng.lng}); // keep "you" fixed
+    list.forEach(function(m){
+      if(!m._ll) return;
+      var lat=m._ll[0], lng=m._ll[1];
+      var clump=placed.filter(function(p){return Math.abs(p.lat-lat)<EPS && Math.abs(p.lng-lng)<EPS;}).length;
+      if(clump>0){
+        var ang=clump*2.399963;   // golden angle → even fan
+        lat=lat+R*Math.sin(ang);
+        lng=lng+R*Math.cos(ang)/Math.max(0.2,Math.cos(lat*Math.PI/180));
+        m._ll=[lat,lng]; m._nudged=true;
+      }
+      placed.push({lat:lat,lng:lng});
+    });
   }
 
   /* ================= Firebase backend ================= */
@@ -866,43 +983,44 @@ const fbDb = getFirestore(fbApp);
       if(state.onMap)refreshMap();
     },function(){});
   }
-  function kicked(){ if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); G.groups.splice(G.active,1); if(!G.groups.length){ clearLocal(); toast(t('removed')); setTimeout(function(){location.reload();},1400); return; } G.active=0; applyActive(); saveLocal(); toast(t('removed')); state.liveDocs={}; subscribeFB(); writeMyDoc(true); refreshMap(); }
-  function switchGroup(i){ if(i<0||i>=G.groups.length||i===G.active)return; G.active=i; applyActive(); saveLocal(); state.selected=null; state.filter='all'; state.liveDocs={}; if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); subscribeFB(); writeMyDoc(true); refreshMap(); }
-  function addGroup(){ var mn=document.getElementById('gbMenu'); if(mn)mn.classList.remove('show'); state_action='create'; document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='create');}); document.getElementById('joinFields').style.display='none'; document.getElementById('gnameField').style.display=''; if(nameInput)nameInput.value=state.name; document.getElementById('gnameInput').value=''; document.getElementById('codeInput').value=''; refreshStart(); document.getElementById('mapscreen').classList.remove('active'); document.getElementById('onboard').classList.add('active'); }
-  function renderGroupBar(){ var cur=G.groups[G.active]; var nm=document.getElementById('gbName'); if(nm)nm.textContent=cur?cur.name:'—'; var menu=document.getElementById('gbMenu'); if(!menu)return; menu.innerHTML=''; G.groups.forEach(function(m,i){ var it=document.createElement('button'); it.className='gb-item'+(i===G.active?' on':''); it.innerHTML='<span>'+m.name+'</span><small>'+(m.role==='Admin'?'Admin':m.mode)+'</small>'; it.addEventListener('click',function(){ menu.classList.remove('show'); switchGroup(i); }); menu.appendChild(it); }); var add=document.createElement('button'); add.className='gb-add'; add.textContent=t('addGroup'); add.addEventListener('click',addGroup); menu.appendChild(add); }
+  function kicked(){ clearLocal(); if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); toast(t('removed')); setTimeout(function(){location.reload();},1400); }
   async function removeMember(uid){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',uid)); }catch(e){} }
   async function setMemberGroup(uid,g){ try{ await updateDoc(doc(fbDb,'groups',G.groupId,'members',uid),{group:g}); }catch(e){} }
-  async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} G.groups.splice(G.active,1); if(!G.groups.length){ clearLocal(); location.reload(); return; } G.active=0; applyActive(); saveLocal(); state.selected=null; state.filter='all'; state.liveDocs={}; subscribeFB(); writeMyDoc(true); refreshMap(); }
+  async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} clearLocal(); location.reload(); }
   async function savePlaces(){ try{ await updateDoc(doc(fbDb,'groups',G.groupId),{places:state.places}); }catch(e){} }
-  var geoWatch=null;
+  var geoPoll=null;
   function applyFix(lat,lng){
     var firstFix=!state.hasFix; state.hasFix=true;
+    // skip redundant work if we barely moved (keeps the app light)
+    var moved=!state.youLatLng||Math.abs(state.youLatLng.lat-lat)>0.00003||Math.abs(state.youLatLng.lng-lng)>0.00003;
     placeYou({lat:lat,lng:lng}, firstFix);   // recenter on first good fix
     if(firstFix) toast(t('tFound'));
-    if(state.live) writeMyDoc(false);
-    draw();
+    if(state.live && (firstFix||moved)) writeMyDoc(firstFix);   // immediate on first fix, throttled after
+    if(firstFix||moved) draw();
+  }
+  function pollOnce(){
+    if(!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+      function(err){ if(!state.hasFix){ if(err&&err.code===1) toast(t('errDenied')); else toast(t('errGps')); } },
+      {enableHighAccuracy:true,timeout:25000,maximumAge:25000});   // cached fix up to 25s old = lighter
   }
   function trackYou(){
-    if(!navigator.geolocation){toast(t('tNoGps'));return;}
-    if(geoWatch!=null) return;
-    geoWatch=navigator.geolocation.watchPosition(
-      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
-      function(){
-        if(state.hasFix) return;
-        // high-accuracy failed/timed out — try a looser fix once
-        navigator.geolocation.getCurrentPosition(
-          function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
-          function(){ toast(t('tNoGps')); },
-          {enableHighAccuracy:false,timeout:15000,maximumAge:60000});
-      },
-      {enableHighAccuracy:true,maximumAge:0,timeout:20000});
+    if(!navigator.geolocation){toast(t('errGps'));return;}
+    if(geoPoll!=null) return;
+    pollOnce();                              // immediate first fix
+    geoPoll=setInterval(pollOnce,30000);     // then every 30s — lighter on battery and CPU
   }
   function forceLocate(){
-    if(!navigator.geolocation){toast(t('tNoGps'));return;}
+    if(!navigator.geolocation){toast(t('errGps'));return;}
     toast(t('tGetting'));
     navigator.geolocation.getCurrentPosition(
-      function(pos){ state.hasFix=true; placeYou({lat:pos.coords.latitude,lng:pos.coords.longitude},true); if(state.live)writeMyDoc(true); draw(); toast(t('tFound')); },
-      function(){ toast(t('tNoGps')); },
+      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+      function(err){ if(err&&err.code===1){toast(t('errDenied'));return;}
+        navigator.geolocation.getCurrentPosition(
+          function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+          function(){ toast(t('errGps')); },
+          {enableHighAccuracy:false,timeout:20000,maximumAge:60000}); },
       {enableHighAccuracy:true,timeout:15000,maximumAge:0});
   }
 
@@ -925,8 +1043,6 @@ const fbDb = getFirestore(fbApp);
       writeMyDoc(true); refreshMap();
     });
     $('recenter').addEventListener('click',function(){ if(state.hasFix&&state.youLatLng){MM.setView(state.youLatLng.lat,state.youLatLng.lng,15);} else {forceLocate();} });
-    $('gbCur').addEventListener('click',function(e){ e.stopPropagation(); $('gbMenu').classList.toggle('show'); });
-    document.addEventListener('click',function(){ var mn=$('gbMenu'); if(mn)mn.classList.remove('show'); });
 
     function shareInvite(group){
       var link=location.origin+location.pathname+'?code='+(G.code||'')+'&g='+group;
@@ -982,38 +1098,154 @@ const fbDb = getFirestore(fbApp);
   nameInput.addEventListener('input',refreshStart);
   $('codeInput').addEventListener('input',refreshStart);
 
-  function gotoMap(){ $('welcome').classList.remove('active'); $('onboard').classList.remove('active'); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
+  function gotoMap(){ ['welcome','onboard','adminlogin'].forEach(function(s){$(s).classList.remove('active');}); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
+
+  /* ===== Admin email login (stable identity across devices) ===== */
+  function goOnboardCreate(){
+    ['welcome','adminlogin'].forEach(function(s){$(s).classList.remove('active');});
+    $('onboard').classList.add('active');
+    state_action='create';
+    document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='create');});
+    $('joinFields').style.display='none'; $('createFields').style.display='';
+    refreshStart(); try{ nameInput.focus(); }catch(e){}
+  }
+  /* ===== Multi-group manager (business) ===== */
+  async function loadMyGroups(go){
+    try{
+      lmsg('4 Hinahanap ang mga grupo mo…');
+      var ex=await getDocs(query(collection(fbDb,'groups'),where('adminId','==',G.uid)));
+      G.groups=[];
+      ex.forEach(function(d){ G.groups.push({id:d.id,code:d.data().code||'',name:d.data().name||'Grupo'}); });
+      G.groups.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+      if(G.groups.length){
+        if(!state.name){ try{state.name=localStorage.getItem('sgb_name')||'';}catch(e){} if(!state.name)state.name='Admin'; }
+        var want=null; try{want=localStorage.getItem('sgb_active');}catch(e){}
+        var idx=0; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===want){idx=i;break;} }
+        lmsg('5 Nakita! Pumapasok…');
+        await activateGroup(idx, go!==false);
+      } else { lmsg('5b Walang grupo — gagawa…'); goOnboardCreate(); }
+    }catch(e){ lmsg('ERR grp: '+((e&&e.code)||e)); goOnboardCreate(); }
+  }
+  async function activateGroup(i, go){
+    if(i<0||i>=G.groups.length) return;
+    G.active=i; var g=G.groups[i];
+    G.groupId=g.id; G.code=g.code; state.role='Admin'; if(!state.mode)state.mode='Team';
+    G.joinedOnce=false; state.liveDocs={}; state.places=[]; state.selected=null;  // reset for the new group
+    try{localStorage.setItem('sgb_active',g.id);}catch(e){}
+    saveLocal();
+    try{ await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true}); }catch(e){}
+    renderGroupBar();
+    if(go){ gotoMap(); }           // first entry: gotoMap → enterMap subscribes
+    else { subscribeFB(); if(state.onMap) refreshMap(); }   // switching: resubscribe in place
+  }
+  async function switchGroup(i){ closeGbMenu(); if(i===G.active) return; await activateGroup(i,false); toast(G.groups[i].name); }
+  async function addGroup(){
+    closeGbMenu();
+    var nm=prompt(state.lang==='fil'?'Pangalan ng bagong grupo (hal. Team Cavite, Pamilya):':'New group name (e.g. Team Cavite, Family):','');
+    if(nm===null) return; nm=(nm||'').trim(); if(!nm) nm=(state.lang==='fil'?'Bagong Grupo':'New Group');
+    try{
+      var code=genCode(); var gref=doc(collection(fbDb,'groups'));
+      await setDoc(gref,{name:nm,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
+      G.groups.push({id:gref.id,code:code,name:nm});
+      G.groups.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+      var ni=0; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===gref.id){ni=i;break;} }
+      await activateGroup(ni,false);
+      toast((state.lang==='fil'?'Nagawa: ':'Created: ')+nm);
+    }catch(e){ toast(t('errJoin')); }
+  }
+  function closeGbMenu(){ var m=$('gbMenu'); if(m) m.classList.remove('open'); }
+  function renderGroupBar(){
+    var bar=$('groupBar'); if(!bar) return;
+    if(state.role!=='Admin' || G.groups.length===0){ bar.style.display='none'; return; }
+    bar.style.display='';
+    var cur=G.groups[G.active]||G.groups[0];
+    $('gbName').textContent=cur?cur.name:'Grupo';
+    var menu=$('gbMenu'); menu.innerHTML='';
+    G.groups.forEach(function(g,i){
+      var it=document.createElement('div'); it.className='gb-item'+(i===G.active?' sel':'');
+      it.innerHTML='<span class="gi-dot"></span><span class="gi-name">'+g.name+'</span><span class="gi-code">'+(g.code||'')+'</span>';
+      it.addEventListener('click',function(){ switchGroup(i); });
+      menu.appendChild(it);
+    });
+    var add=document.createElement('div'); add.className='gb-item gb-add';
+    add.textContent=(state.lang==='fil'?'➕ Bagong grupo':'➕ New group');
+    add.addEventListener('click',addGroup);
+    menu.appendChild(add);
+  }
+  async function enterAsAdmin(){
+    var u=fbAuth.currentUser; if(!u)return;
+    G.uid=u.uid; G.ready=true; G.email=u.email||null; booted=true;
+    try{localStorage.removeItem('sgb_active');}catch(e){}
+    clearLocal();              // explicit admin login overrides any stale member context on this device
+    await loadMyGroups(true);
+  }
+  function lmsg(s){ var e=$('loginMsg'); if(e) e.textContent=s; }
+  async function adminSignIn(){
+    var em=$('loginEmail').value.trim(), pw=$('loginPass').value;
+    if(!em||!pw){ lmsg('Ilagay ang email at password'); return; }
+    $('loginSignIn').disabled=true; lmsg('1 Nagla-log in…');
+    try{ await signInWithEmailAndPassword(fbAuth,em,pw); lmsg('2 OK, pumapasok…'); await enterAsAdmin(); }
+    catch(e){ lmsg('ERR login: '+((e&&e.code)||e)); }
+    $('loginSignIn').disabled=false;
+  }
+  async function adminSignUp(){
+    var em=$('loginEmail').value.trim(), pw=$('loginPass').value;
+    if(!em||pw.length<6){ lmsg('Email + password (6+ karakter)'); return; }
+    $('loginSignUp').disabled=true; lmsg('1 Gumagawa ng account…');
+    try{
+      var cur=fbAuth.currentUser;
+      if(cur && cur.isAnonymous){ lmsg('1a Ini-link sa email…'); await linkWithCredential(cur, EmailAuthProvider.credential(em,pw)); }
+      else { lmsg('1b Bagong account…'); await createUserWithEmailAndPassword(fbAuth,em,pw); }
+      lmsg('2 OK, pumapasok…'); await enterAsAdmin();
+    }catch(e){
+      lmsg('2b Sinusubok mag-login… ['+((e&&e.code)||e)+']');
+      try{ await signInWithEmailAndPassword(fbAuth,em,pw); lmsg('3 OK, pumapasok…'); await enterAsAdmin(); }
+      catch(e2){ lmsg('ERR: '+((e2&&e2.code)||e2)); }
+    }
+    $('loginSignUp').disabled=false;
+  }
+  async function adminReset(){
+    var em=$('loginEmail').value.trim();
+    if(!em){ toast(t('needEmail')); return; }
+    try{ await sendPasswordResetEmail(fbAuth,em); toast(t('resetSent')); }
+    catch(e){ toast(t('resetErr')); }
+  }
+  $('loginSignIn').addEventListener('click',adminSignIn);
+  $('loginSignUp').addEventListener('click',adminSignUp);
+  $('loginForgot').addEventListener('click',adminReset);
+  $('gbCur').addEventListener('click',function(e){ e.stopPropagation(); var m=$('gbMenu'); m.classList.toggle('open'); });
+  document.addEventListener('click',function(e){ var gb=$('groupBar'); if(gb && !gb.contains(e.target)) closeGbMenu(); });
+  async function doLogout(){ try{ await signOut(fbAuth); }catch(e){} clearLocal(); location.reload(); }
 
   async function doStart(){
     if(!G.ready||!G.uid){ toast(t('connecting')); return; }
     state.name=nameInput.value.trim(); if(!state.name)return;
-    startBtn.disabled=true;
+    state.sharing=state.consent; startBtn.disabled=true;
     try{
-      var gid,code,role,mode,gname;
       if(state_action==='create'){
-        gname=($('gnameInput').value.trim())||(state.name+"'s group");
-        code=genCode(); var gref=doc(collection(fbDb,'groups'));
+        // business: create a NEW named group and add it to the switcher
+        var gname=($('gnameInput')&&$('gnameInput').value.trim())||(state.name+(state.lang==='fil'?' Grupo':' Group'));
+        var code=genCode(); var gref=doc(collection(fbDb,'groups'));
         await setDoc(gref,{name:gname,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
-        gid=gref.id; role='Admin'; mode=state.mode||'Team';
+        G.groups.push({id:gref.id,code:code,name:gname});
+        G.groups.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+        var ni=0; for(var k=0;k<G.groups.length;k++){ if(G.groups[k].id===gref.id){ni=k;break;} }
+        state.role='Admin'; if(!state.mode)state.mode='Team';
+        await activateGroup(ni,true);   // writes member doc + gotoMap
+        return;
       }else{
         var ic=$('codeInput').value.trim().toUpperCase();
         var qs=await getDocs(query(collection(fbDb,'groups'),where('code','==',ic)));
         if(qs.empty){ toast(t('badCode')); startBtn.disabled=false; return; }
-        var gd=qs.docs[0]; gid=gd.id; code=ic; gname=gd.data().name||'Group';
-        role=(gd.data().adminId===G.uid)?'Admin':'Member'; mode=state.mode||'Team';
-        var msnap=await getDocs(collection(fbDb,'groups',gid,'members'));
+        var gd=qs.docs[0]; G.groupId=gd.id; G.code=ic;
+        state.role=(gd.data().adminId===G.uid)?'Admin':'Member';   // original admin rejoins as Admin
+        var msnap=await getDocs(collection(fbDb,'groups',G.groupId,'members'));
         var nmlc=state.name.trim().toLowerCase(), clash=false;
         msnap.forEach(function(d){ if(d.id!==G.uid && ((d.data().name||'').trim().toLowerCase()===nmlc)) clash=true; });
         if(clash){ toast(t('nameTaken')); startBtn.disabled=false; return; }
       }
-      var exist=-1; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===gid){exist=i;break;} }
-      var mem={id:gid,code:code,role:role,mode:mode,name:gname};
-      if(exist>=0){ G.groups[exist]=mem; G.active=exist; } else { G.groups.push(mem); G.active=G.groups.length-1; }
-      state.sharing=state.consent; applyActive(); saveLocal();
-      await setDoc(doc(fbDb,'groups',gid,'members',G.uid), myMemberDoc(), {merge:true});
-      $('onboard').classList.remove('active'); $('mapscreen').classList.add('active');
-      if(state.onMap){ state.selected=null; state.filter='all'; state.liveDocs={}; subscribeFB(); writeMyDoc(true); refreshMap(); }
-      else { setTimeout(enterMap,120); }
+      await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
+      saveLocal(); gotoMap();
     }catch(e){ toast(t('errJoin')); startBtn.disabled=false; }
   }
   startBtn.addEventListener('click',doStart);
@@ -1023,7 +1255,7 @@ const fbDb = getFirestore(fbApp);
     if(!pc) return false;
     state_action='join';
     document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='join');});
-    $('joinFields').style.display='';
+    $('joinFields').style.display=''; $('createFields').style.display='none';
     $('codeInput').value=pc.toUpperCase();
     if(pg==='Family'||pg==='Team'){
       state.mode=pg;
@@ -1035,18 +1267,21 @@ const fbDb = getFirestore(fbApp);
     return true;
   }
 
-  // Firebase auth + resume saved group / deep link
-  signInAnonymously(fbAuth).catch(function(){});
+  // Firebase auth + resume / deep link / load all managed groups
   onAuthStateChanged(fbAuth,function(user){
-    if(!user)return; G.uid=user.uid; G.ready=true;
-    var arr=[],act=0,nm='';
-    try{ arr=JSON.parse(localStorage.getItem('sgb_groups')||'[]'); act=parseInt(localStorage.getItem('sgb_active')||'0',10); nm=localStorage.getItem('sgb_name')||''; }catch(e){}
-    if(arr&&arr.length){
-      state.name=nm; G.groups=arr; G.active=(act>=0&&act<arr.length)?act:0; applyActive();
-      gotoMap();
-    } else if(applyDeepLink()){
+    if(!user){ if(!booted) signInAnonymously(fbAuth).catch(function(){}); return; }
+    G.uid=user.uid; G.ready=true; G.email=user.isAnonymous?null:(user.email||null);
+    if(booted){ if($('mapscreen').classList.contains('active')) refreshMap(); return; }
+    booted=true;
+    var savedG=null,savedRole=null; try{savedG=localStorage.getItem('sgb_group');savedRole=localStorage.getItem('sgb_role');}catch(e){}
+    if(applyDeepLink()){                 // new member joining via invite link
       $('welcome').classList.remove('active'); $('onboard').classList.add('active');
       try{ nameInput.focus(); }catch(e){}
+    } else if(savedG && savedRole==='Member'){   // returning member — single group, no switcher
+      try{ state.name=localStorage.getItem('sgb_name')||''; state.role='Member'; state.mode=localStorage.getItem('sgb_mode')||'Team'; G.groupId=savedG; G.code=localStorage.getItem('sgb_code')||''; }catch(e){}
+      gotoMap();
+    } else {                              // manager — load every group they own (or create the first)
+      loadMyGroups(true);
     }
   });
 
