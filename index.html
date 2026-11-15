@@ -349,6 +349,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </section>
 
+  <section id="liclock" class="screen" style="background:radial-gradient(1100px 640px at 50% -12%,rgba(244,63,94,.20),transparent 58%),radial-gradient(1000px 640px at 50% 118%,rgba(245,158,11,.14),transparent 58%),var(--navy-800);padding:24px;overflow-y:auto;justify-content:center;align-items:center;">
+    <div class="login-card">
+      <div style="font-size:40px;text-align:center;margin-bottom:6px;">🔒</div>
+      <div class="brand-name" style="text-align:center;" data-i18n="lockTitle"></div>
+      <div class="faint" id="lockBody" style="font-size:13px;text-align:center;line-height:1.5;margin-top:8px;"></div>
+      <div class="field" style="margin-top:18px;">
+        <label class="label" data-i18n="lockCodeLabel"></label>
+        <input id="lockInput" class="input" data-i18n-ph="licPh" autocomplete="off" style="text-transform:uppercase;letter-spacing:1.5px;" />
+      </div>
+      <button id="lockActivate" class="btn" data-i18n="lockActivate"></button>
+      <div id="lockMsg" style="text-align:center;font-size:13px;color:var(--amber,#f59e0b);min-height:18px;margin-top:10px;font-weight:700;"></div>
+      <button id="lockContact" class="btn-link" data-i18n="lockRenew" style="margin-top:8px;"></button>
+      <button id="lockLogout" class="btn-link" data-i18n="logoutBtn"></button>
+    </div>
+  </section>
+
   <!-- SETUP -->
   <section id="onboard" class="screen">
     <div class="ob-top">
@@ -373,6 +389,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="field" id="createFields">
       <label class="label" data-i18n="qGroupName"></label>
       <input id="gnameInput" class="input" data-i18n-ph="groupNamePh" autocomplete="off" />
+      <label class="label" style="margin-top:14px;" data-i18n="licLabel"></label>
+      <input id="licInput" class="input" data-i18n-ph="licPh" autocomplete="off" style="text-transform:uppercase;letter-spacing:1.5px;" />
+      <div class="consent-hint" style="margin-top:6px;" data-i18n="licHint"></div>
     </div>
     <div id="joinFields" style="display:none;">
       <div class="field">
@@ -544,6 +563,10 @@ const fbDb = getFirestore(fbApp);
       pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"📍 I-drag/i-center mo muna ang mapa sa TAMANG lugar bago mag-save (doon ilalagay).", save:"I-save", cancel:"Kanselahin",
       moveHere:"Ilipat dito", placeMoved:"Inilipat sa gitna ng mapa ✓", placeAdded:"Naidagdag ✓ — i-drag ang pin 🔴 sa mapa para itama ang lugar", deletePlaceQ:"I-delete ang lugar na ", placeDeleted:"Na-delete ang lugar ✓",
       pmVisLabel:"Sino ang makakakita?", visFamOnly:"Pamilya lang", visTeamOnly:"Team lang", visAll:"Lahat", visNone:"Pumili ng Pamilya o Team", visChanged:"Na-update ✓",
+      licLabel:"Activation Code (subscription)", licPh:"hal. SGB-2K4M-9XQ", licHint:"Kailangan ng code para makagawa ng business group. Makipag-ugnayan sa SetupGo para bumili o mag-renew.",
+      licBad:"Mali o hindi valid ang code", licRevoked:"Na-deactivate na ang code na ito", licExpired:"Expired na ang subscription — mag-renew", licUsed:"Ginamit na ang code sa ibang account", licNet:"Walang koneksyon — subukan ulit", licOK:"Activated ✓",
+      lockTitle:"Kailangan ng aktibong subscription", lockBodyExpired:"Nag-expire ang iyong subscription. Mag-renew o mag-enter ng bagong code para magamit ulit ang Business app.", lockBodyRevoked:"Na-deactivate ang iyong code. Makipag-ugnayan sa SetupGo o mag-enter ng bagong code.", lockBodyBad:"Hindi valid ang iyong code. Mag-enter ng tamang activation code.",
+      lockCodeLabel:"Activation Code", lockActivate:"I-activate", lockRenew:"📨 Makipag-ugnayan para mag-renew",
       insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
       sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
@@ -602,6 +625,10 @@ const fbDb = getFirestore(fbApp);
       pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"📍 Center the map on the RIGHT spot before saving (it's placed there).", save:"Save", cancel:"Cancel",
       moveHere:"Move here", placeMoved:"Moved to map center ✓", placeAdded:"Added ✓ — drag the 🔴 pin on the map to fix its spot", deletePlaceQ:"Delete place ", placeDeleted:"Place deleted ✓",
       pmVisLabel:"Who can see this?", visFamOnly:"Family only", visTeamOnly:"Team only", visAll:"Everyone", visNone:"Pick Family or Team", visChanged:"Updated ✓",
+      licLabel:"Activation Code (subscription)", licPh:"e.g. SGB-2K4M-9XQ", licHint:"A code is required to create a business group. Contact SetupGo to purchase or renew.",
+      licBad:"Invalid code", licRevoked:"This code has been deactivated", licExpired:"Subscription expired — please renew", licUsed:"Code already used on another account", licNet:"No connection — try again", licOK:"Activated ✓",
+      lockTitle:"Active subscription required", lockBodyExpired:"Your subscription has expired. Renew or enter a new code to use the Business app again.", lockBodyRevoked:"Your code has been deactivated. Contact SetupGo or enter a new code.", lockBodyBad:"Your code is not valid. Enter a correct activation code.",
+      lockCodeLabel:"Activation Code", lockActivate:"Activate", lockRenew:"📨 Contact us to renew",
       insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
       sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
@@ -630,9 +657,37 @@ const fbDb = getFirestore(fbApp);
   /* ================= Firebase group state ================= */
   var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false,email:null,groups:[],active:-1};
   var booted=false;
-  function clearLocal(){ try{['sgb_name','sgb_role','sgb_mode','sgb_group','sgb_code'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
+  function clearLocal(){ try{['sgb_name','sgb_role','sgb_mode','sgb_group','sgb_code','sgb_active','sgb_license'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
   function saveLocal(){ try{localStorage.setItem('sgb_name',state.name);localStorage.setItem('sgb_role',state.role);localStorage.setItem('sgb_mode',state.mode);localStorage.setItem('sgb_group',G.groupId);localStorage.setItem('sgb_code',G.code||'');}catch(e){} }
   function genCode(){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s; }
+  var LICENSE_CONTACT='https://www.facebook.com/profile.php?id=61596429292499';
+  async function validateLicense(code){
+    code=(code||'').trim().toUpperCase();
+    if(!code) return {ok:false,reason:'bad'};
+    try{
+      var snap=await getDoc(doc(fbDb,'licenses',code));
+      if(!snap.exists()) return {ok:false,reason:'bad'};
+      var d=snap.data()||{};
+      if(d.active===false) return {ok:false,reason:'revoked',data:d};
+      if(d.expires && Date.now()>Number(d.expires)) return {ok:false,reason:'expired',data:d};
+      if(d.usedBy && d.usedBy!==G.uid) return {ok:false,reason:'used',data:d};
+      return {ok:true,data:d,code:code};
+    }catch(e){ return {ok:false,reason:'net'}; }
+  }
+  async function bindLicense(code){ try{ await updateDoc(doc(fbDb,'licenses',code),{usedBy:G.uid,activatedAt:Date.now()}); }catch(e){} }
+  function licReason(r){ return r==='revoked'?t('licRevoked'):r==='expired'?t('licExpired'):r==='used'?t('licUsed'):r==='net'?t('licNet'):t('licBad'); }
+  async function accountLicense(groupLic){
+    var code=''; try{code=(localStorage.getItem('sgb_license')||'');}catch(e){}
+    if(!code) code=groupLic||'';
+    if(!code) return {ok:true,none:true};
+    return await validateLicense(code);
+  }
+  function showLock(reason){
+    ['welcome','onboard','adminlogin','mapscreen'].forEach(function(s){$(s).classList.remove('active');});
+    var b=reason==='revoked'?t('lockBodyRevoked'):reason==='expired'?t('lockBodyExpired'):t('lockBodyBad');
+    $('lockBody').textContent=b; $('lockMsg').textContent=''; var li=$('lockInput'); if(li) li.value='';
+    $('liclock').classList.add('active');
+  }
   function applyRoleUI(){}  // role is now decided by create/join, not identity
   var state_action='create';  // 'create' | 'join'
 
@@ -679,7 +734,7 @@ const fbDb = getFirestore(fbApp);
   document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';$('createFields').style.display=(state_action==='create')?'':'none';refreshStart();});});
   document.querySelectorAll('[data-mode]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.mode=m.dataset.mode;});});
   var nameInput,startBtn,consentToggle;
-  function refreshStart(){ var ok=nameInput.value.trim().length>0; if(state_action==='join'){ var c=$('codeInput'); ok=ok&&c&&c.value.trim().length>0; } startBtn.disabled=!ok; }
+  function refreshStart(){ var ok=nameInput.value.trim().length>0; if(state_action==='join'){ var c=$('codeInput'); ok=ok&&c&&c.value.trim().length>0; } else { var l=$('licInput'); ok=ok&&l&&l.value.trim().length>0; } startBtn.disabled=!ok; }
 
   /* ================= mini map engine ================= */
   var FALLBACK={lat:14.2726,lng:121.1256};
@@ -1200,6 +1255,18 @@ const fbDb = getFirestore(fbApp);
   consentToggle.addEventListener('click',function(){state.consent=!state.consent;consentToggle.classList.toggle('on',state.consent);refreshStart();});
   nameInput.addEventListener('input',refreshStart);
   $('codeInput').addEventListener('input',refreshStart);
+  $('licInput').addEventListener('input',refreshStart);
+  $('lockContact').addEventListener('click',function(){ try{ window.open(LICENSE_CONTACT,'_blank'); }catch(e){} });
+  $('lockLogout').addEventListener('click',function(){ doLogout(); });
+  $('lockActivate').addEventListener('click',async function(){
+    var code=($('lockInput').value||'').trim().toUpperCase(); if(!code){ $('lockMsg').textContent=t('licBad'); return; }
+    $('lockMsg').textContent='…';
+    var vr=await validateLicense(code);
+    if(!vr.ok){ $('lockMsg').textContent=licReason(vr.reason); return; }
+    if(!vr.data.usedBy) await bindLicense(vr.code);
+    try{ localStorage.setItem('sgb_license',vr.code); }catch(e){}
+    $('lockMsg').textContent=t('licOK'); location.reload();
+  });
 
   function gotoMap(){ ['welcome','onboard','adminlogin'].forEach(function(s){$(s).classList.remove('active');}); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
 
@@ -1218,10 +1285,12 @@ const fbDb = getFirestore(fbApp);
     try{
       lmsg('4 Hinahanap ang mga grupo mo…');
       var ex=await getDocs(query(collection(fbDb,'groups'),where('adminId','==',G.uid)));
-      G.groups=[];
-      ex.forEach(function(d){ G.groups.push({id:d.id,code:d.data().code||'',name:d.data().name||'Grupo'}); });
+      G.groups=[]; var licFromGroup='';
+      ex.forEach(function(d){ G.groups.push({id:d.id,code:d.data().code||'',name:d.data().name||'Grupo'}); if(d.data().license && !licFromGroup) licFromGroup=d.data().license; });
       G.groups.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
       if(G.groups.length){
+        var vr=await accountLicense(licFromGroup);
+        if(!vr.ok && vr.reason!=='net'){ showLock(vr.reason); return; }   // subscription lapsed/revoked → lock
         if(!state.name){ try{state.name=localStorage.getItem('sgb_name')||'';}catch(e){} if(!state.name)state.name='Admin'; }
         var want=null; try{want=localStorage.getItem('sgb_active');}catch(e){}
         var idx=0; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===want){idx=i;break;} }
@@ -1245,11 +1314,14 @@ const fbDb = getFirestore(fbApp);
   async function switchGroup(i){ closeGbMenu(); if(i===G.active) return; await activateGroup(i,false); toast(G.groups[i].name); }
   async function addGroup(){
     closeGbMenu();
+    var vr=await accountLicense('');
+    if(!vr.ok && vr.reason!=='net'){ showLock(vr.reason); return; }   // need active subscription to add groups
     var nm=prompt(state.lang==='fil'?'Pangalan ng bagong grupo (hal. Team Cavite, Pamilya):':'New group name (e.g. Team Cavite, Family):','');
     if(nm===null) return; nm=(nm||'').trim(); if(!nm) nm=(state.lang==='fil'?'Bagong Grupo':'New Group');
+    var accLic=vr.code||''; try{ if(!accLic) accLic=localStorage.getItem('sgb_license')||''; }catch(e){}
     try{
       var code=genCode(); var gref=doc(collection(fbDb,'groups'));
-      await setDoc(gref,{name:nm,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
+      await setDoc(gref,{name:nm,code:code,adminId:G.uid,license:accLic,places:[],createdAt:Date.now()});
       G.groups.push({id:gref.id,code:code,name:nm});
       G.groups.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
       var ni=0; for(var i=0;i<G.groups.length;i++){ if(G.groups[i].id===gref.id){ni=i;break;} }
@@ -1327,10 +1399,16 @@ const fbDb = getFirestore(fbApp);
     state.sharing=state.consent; startBtn.disabled=true;
     try{
       if(state_action==='create'){
+        // business: require a valid subscription/activation code
+        var lic=($('licInput')&&$('licInput').value.trim().toUpperCase())||'';
+        var vr=await validateLicense(lic);
+        if(!vr.ok){ toast(licReason(vr.reason)); startBtn.disabled=false; return; }
+        if(!vr.data.usedBy) await bindLicense(vr.code);
+        try{ localStorage.setItem('sgb_license',vr.code); }catch(e){}
         // business: create a NEW named group and add it to the switcher
         var gname=($('gnameInput')&&$('gnameInput').value.trim())||(state.name+(state.lang==='fil'?' Grupo':' Group'));
         var code=genCode(); var gref=doc(collection(fbDb,'groups'));
-        await setDoc(gref,{name:gname,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
+        await setDoc(gref,{name:gname,code:code,adminId:G.uid,license:vr.code,places:[],createdAt:Date.now()});
         G.groups.push({id:gref.id,code:code,name:gname});
         G.groups.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
         var ni=0; for(var k=0;k<G.groups.length;k++){ if(G.groups[k].id===gref.id){ni=k;break;} }
